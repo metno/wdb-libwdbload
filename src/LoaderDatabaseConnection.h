@@ -26,20 +26,37 @@
  MA  02110-1301, USA
  */
 
+#ifndef LOADERDATABASECONNECTION_H_
+#define LOADERDATABASECONNECTION_H_
 
-#ifndef LOADERDATABASEINTERFACE_H_
-#define LOADERDATABASEINTERFACE_H_
-
-#include <WdbLevel.h>
+#include "LoaderDatabaseInterface.h"
+#include "WdbLevel.h"
+#include <pqxx/connection>
 #include <string>
-#include <vector>
 
-class LoaderDatabaseInterface
+namespace wdb
+{
+namespace database
+{
+
+
+/**
+ * Database connection class for loading programs, with a loading function and
+ * a few utility functions. Loading programs may use this as a base class for
+ * writing to wci. Writing is done through the loadField method, and it is up
+ * to each subclass to determine the correct arguments to give.
+ *
+ * The other methods in this class provide a way to request information from
+ * the database which may later be used in a call to loadField.
+ */
+class LoaderDatabaseConnection : public pqxx::connection, public LoaderDatabaseInterface
 {
 public:
-	virtual ~LoaderDatabaseInterface() {}
+	LoaderDatabaseConnection(const std::string & target, const std::string & wciUser);
+	virtual ~LoaderDatabaseConnection();
 
-	/**
+	// OPERATIONS
+    /**
      * Load a Value into the Database for the designated field.
      * @param	dataProvider	The data provider id of the field
      * @param	placeId			The place id of the fields grid description
@@ -61,13 +78,13 @@ public:
 				    const std::string & validTimeTo,
 				    int validTimeIndCode,
 				    int valueparameter,
-					const std::vector <wdb::database::WdbLevel> & levels,
+					const std::vector<wdb::database::WdbLevel> & levels,
 		   			int dataVersion,
 				    int qualityCode,
 	 			    const double * values,
-	     		    unsigned int noOfValues ) =0;
+	     		    unsigned int noOfValues );
 
-    /** Get the PlaceId of a GRIB1 Field.
+    /** Get the PlaceId of a field.
      * @param	geoObj		The geometry object described as a string
      * @param	geoDatum	The datum of the geometry object
      * @param	iNum		Number of points along the i axis
@@ -79,7 +96,7 @@ public:
      * @param	origDatum	The original datum of the geometry object
      * @return the PlaceId of the inserted PlaceDefinition
      */
-    virtual long int getPlaceId(const std::string & geoObj,
+    long int getPlaceId(const std::string & geoObj,
 	                         int geoDatum,
                              long int iNum,
                              long int jNum,
@@ -87,10 +104,10 @@ public:
                              float jInc,
                              float startLon,
                              float startLat,
-							 int origDatum) =0;
+							 int origDatum);
 
     /**
-     * Load a new PlaceDefinition for a GRIB1 field into the database.
+     * Load a new PlaceDefinition for a field into the database.
      * @param	geoObj		The geometry object described as a string
      * @param	geoDatum	The datum of the geometry object. Ignored by the postgres gribload
      * @param	iNum		Number of points along the i axis
@@ -102,7 +119,7 @@ public:
      * @param	origDatum	The original datum of the geometry object
      * @return the PlaceId of the inserted PlaceDefinition
      */
-    virtual long int setPlaceId(const std::string & geoObj,
+    long int setPlaceId(const std::string & geoObj,
                              int geoDatum,
                              long int iNum,
                              long int jNum,
@@ -110,7 +127,7 @@ public:
                              float jInc,
                              float startLon,
                              float startLat,
-							 int origDatum) =0;
+							 int origDatum);
 
     /**
      * Get the SRID for a Proj String
@@ -118,7 +135,20 @@ public:
      * @param	projStr		The PROJ definition of the Srid
      * @return	Returns the srid
      */
-    virtual int getSrid(const std::string & projStr) =0;
+    int getSrid(const std::string & projStr);
+
+    /**
+     * Read the Unit Data
+     * @param	unit		The unit to be queries
+     * @param	coeff1		First coefficient of conversion
+     * @param	term1		First term of conversion
+     * @param	coeff2		Second coefficient of conversion
+     * @param	term2		Second term of conversion
+     */
+    void readUnit( const std::string & unit, float * coeff, float * term );
 };
 
-#endif /* LOADERDATABASEINTERFACE_H_ */
+}
+}
+
+#endif /* LOADERDATABASECONNECTION_H_ */
