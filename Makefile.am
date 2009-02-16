@@ -18,12 +18,10 @@ AM_CXXFLAGS = -I@top_srcdir@/src/
 AM_LDFLAGS = 
 
 # Setting Targets
-
 lib_LTLIBRARIES = libwdbLoaderBase.la
 
 libwdbLoaderBase_la_SOURCES =
 pkginclude_HEADERS =
-	
 
 libwdbLoaderBase_la_CPPFLAGS =$(wdb_CFLAGS)
 libwdbLoaderBase_la_LIBADD = $(wdb_LIBS)

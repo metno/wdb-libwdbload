@@ -104,7 +104,7 @@ public:
 	  		}
   		}
   		if ( R.size() != 1 ) {
-			log.warnStream() << "Problem finding unit data for " << unit_ ;
+			log.warnStream() << "Problem finding unit data for " << unit_ << ". " << R.size() << " rows returned";
   	        throw WdbException("Transaction ReadUnit did not return correct number of values. This suggests an error in the metadata", __func__);
   		}
 	}

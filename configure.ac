@@ -96,3 +96,26 @@ AM_PROG_CC_C_O
 # Configuration Files
 AC_CONFIG_FILES([Makefile wdbLoaderBase.pc])
 AC_OUTPUT
+
+# Print Out Summary of Configuration
+AC_MSG_RESULT([ ])
+AC_MSG_RESULT([$PACKAGE_NAME $PACKAGE_VERSION])
+AC_MSG_RESULT([Configuration:])
+AC_MSG_RESULT([-------------------------------------------------------------------------])
+AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ Database Name:	  $DATABASE_NAME])
+AC_MSG_RESULT([ Source Code:      $srcdir])
+AC_MSG_RESULT([ Host System:      $host])
+AC_MSG_RESULT([  ])
+AC_MSG_RESULT([ Prefix:           $prefix])
+AC_MSG_RESULT([ Binaries:         $exec_prefix])
+AC_MSG_RESULT([ Manuals:          $mandir])
+AC_MSG_RESULT([ Data:             $datadir])
+AC_MSG_RESULT([ System Config:    $sysconfdir])
+AC_MSG_RESULT([ ])
+AC_MSG_RESULT([ CPPFLAGS:         $CPPFLAGS])
+AC_MSG_RESULT([ LDFLAGS:          $LDFLAGS])
+AC_MSG_RESULT([ LIBS:             $LIBS])
+AC_MSG_RESULT([  ])
+AC_MSG_RESULT([-------------------------------------------------------------------------])
+AC_MSG_RESULT([ ])
