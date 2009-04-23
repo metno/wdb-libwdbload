@@ -64,7 +64,7 @@ getInput( LoaderConfiguration::InputOptions & out )
 {
     options_description input( "Input" );
     input.add_options()
-    ( "name", value<vector<string> >( & out.file ), "Name of file to process" )
+    ( "name", value<vector<string> >( & out.file ), "Name of files to process" )
     ;
 
 	return input;
