@@ -47,6 +47,9 @@
 #include <wdbLogHandler.h>
 
 // SYSTEM INCLUDES
+
+#include "libpq-fe.h"
+
 #include <pqxx/transactor>
 #include <pqxx/result>
 #include <pqxx/largeobject>
@@ -59,40 +62,6 @@
 // FORWARD REFERENCES
 //
 
-namespace
-{
-
-/**
- * Class to handle creation and deletion of file stream automaticall
- * Creates a new file for writing, deleting it when this object is deleted.
- */
-class AutoDeleteFileStream : public std::ofstream
-{
-public:
-	/**
-	 * Default Constructor
-	 * @param	fname	File name of stram to open
-	 */
-    AutoDeleteFileStream( const std::string & fname )
-            : std::ofstream( fname.c_str() ), fname_( fname )
-    {
-    	// NOOP
-    }
-    /// Destructor
-    virtual ~AutoDeleteFileStream()
-    {
-        close();
-        std::remove( fname_.c_str() );
-    }
-
-private:
-	/// File name
-    std::string fname_;
-};
-
-}
-
-#define CREATE_BLOB_FILE
 
 namespace wdb {
 
@@ -155,45 +124,16 @@ public:
 	void operator()(argument_type &T)
   	{
 		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.value" );
-
-#ifdef CREATE_BLOB_FILE
-		// Create Blobs
-		std::ostringstream fname_tmp;
-		fname_tmp << "/tmp/wdbLoad." << getpid();
-		const std::string file = fname_tmp.str();
-		// Write Blob to File
-		log.debugStream() << "Creating file " << file << " for temporary storing of blob before loading into database";
-		AutoDeleteFileStream out( file ); // File is automatically deleted when function exits
-		if (!out)
-			throw WdbException ("Failed to create file for blob.", __func__);
-
-		// Copy doubles into a float array, as that is what the database wants:
-		const std::vector<float> v( values_, values_ + noOfValues_ );
-		const char * buf = reinterpret_cast<const char *>( &v[0] );
-		// Write file
-		out.write( buf, noOfValues_ * sizeof(float) );
-		out.flush();
-		if (!out)
-		{
-			log.errorStream() << "Failed to write blob values to file " << file;
-			throw WdbException ("Failed to write blob values to file.", __func__);
-		}
-
-		// Create Large Object from file
-		pqxx::largeobject valueObj(T, fname_tmp.str());
-#else
-		// Copy doubles into a float array, as that is what the database wants:
-		const std::vector<float> v( values_, values_ + noOfValues_ );
-		// Create Large Object from file
-		pqxx::largeobject valueObj(T);
-#endif
-
+		const std::vector<float> data(values_, values_ + noOfValues_);
+		const char * rawData = reinterpret_cast<const char *>(& data[0]);
+		size_t binarySize = noOfValues_ * sizeof(float) / sizeof(char);
+		const std::string binaryData(rawData, binarySize);
 		// Write
 		for ( std::vector <wdb::database::WdbLevel>::const_iterator level = levels_.begin(); level != levels_.end(); ++ level )
 		{
 			// Write Value
 			R = T.prepared("WriteWCI")
-						  (valueObj.id())
+						  (binaryData)
 						  (dataProvider_)
 						  (placeId_)
 						  (referenceTime_)
@@ -208,12 +148,6 @@ public:
 						  (dataVersion_)
 						  (confidenceCode_).exec();
 		}
-#ifndef CREATE_BLOB_FILE
-		pqxx::lostream blob(T, valueObj);
-		blob.write(reinterpret_cast<const char *>( &v[0] ), noOfValues_ * sizeof(float));
-		if ( ! blob )
-			throw WdbException("Unable to write blob to database", __func__);
-#endif
   	}
 
 	/**

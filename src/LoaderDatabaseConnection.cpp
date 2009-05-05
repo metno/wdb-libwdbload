@@ -85,7 +85,7 @@ LoaderDatabaseConnection::LoaderDatabaseConnection(const std::string & target, c
     prepare("WriteWCI",
     		"select "
             "wci.write ("
-            "$1::oid,"
+            "$1::bytea,"
     		"$2::bigint,"
     		"$3::bigint,"
     		"$4::timestamp with time zone,"
@@ -100,7 +100,7 @@ LoaderDatabaseConnection::LoaderDatabaseConnection(const std::string & target, c
     		"$13::integer,"
             "$14::integer"
     		")" )
-            ("oid", treat_direct )
+            ("bytea", treat_binary )
             ("int8", treat_direct )
             ("int8", treat_direct )
             ("varchar", treat_direct )
@@ -121,7 +121,6 @@ LoaderDatabaseConnection::~LoaderDatabaseConnection()
     unprepare("ReadPlaceXref");
     unprepare("ReadSrid");
     unprepare("WriteSrid");
-    unprepare("WriteWCI");
     unprepare("ReadUnitData");
     perform ( EndWci( ), 1 );
 }
@@ -270,3 +269,4 @@ LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, flo
 
 }
 }
+
