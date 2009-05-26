@@ -1,3 +1,9 @@
+wdbloaderbase (0.9.1-1) hardy; urgency=low
+
+  * New upstream release
+
+ -- Vegard B�nes <vegardb@met.no>  Tue, 26 May 2009 12:56:16 +0000
+
 wdbloaderbase (0.9.0-1) hardy; urgency=low
 
   * New Upstream release 
