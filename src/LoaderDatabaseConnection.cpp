@@ -27,6 +27,7 @@
  */
 
 #include "LoaderDatabaseConnection.h"
+#include "transactors/loadTransactorWriteByteA.h"
 #include "transactors/loaderTransactorValue.h"
 #include "transactors/loaderTransactorWci.h"
 #include "transactors/loaderTransactorPlaceDefinition.h"
@@ -114,10 +115,42 @@ LoaderDatabaseConnection::LoaderDatabaseConnection(const std::string & target, c
 			("int4", treat_direct )
 			("int4", treat_direct )
 			("int4", treat_direct );
+
+    // Statement Insert value
+    prepare("WCIWriteByteA",
+    		"select "
+            "wci.write ("
+            "$1::bytea,"
+    		"$2::text,"
+    		"$3::text,"
+    		"$4::timestamp with time zone,"
+    		"$5::timestamp with time zone,"
+    		"$6::timestamp with time zone,"
+    		"$7::text,"
+    		"$8::text,"
+    		"$9::real,"
+    		"$10::real,"
+    		"$11::integer,"
+            "$12::integer"
+    		")" )
+            ("bytea", treat_binary )
+            ("varchar", treat_direct )
+            ("varchar", treat_direct )
+            ("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+            ("real", treat_direct )
+            ("real", treat_direct )
+			("int4", treat_direct )
+			("int4", treat_direct );
+
 }
 
 LoaderDatabaseConnection::~LoaderDatabaseConnection()
 {
+    unprepare("WCIWriteByteA");
     unprepare("ReadPlaceXref");
     unprepare("ReadSrid");
     unprepare("WriteSrid");
@@ -126,18 +159,59 @@ LoaderDatabaseConnection::~LoaderDatabaseConnection()
 }
 
 void
+LoaderDatabaseConnection::write( const double * values,
+								 unsigned int noOfValues,
+								 const std::string & dataProviderName,
+								 const std::string & placeName,
+								 const std::string & referenceTime,
+								 const std::string & validTimeFrom,
+								 const std::string & validTimeTo,
+								 const std::string & valueParameterName,
+								 const std::string & levelParameterName,
+								 float levelFrom,
+								 float levelTo,
+								 int dataVersion,
+								 int confidenceCode )
+{
+    try {
+		perform(
+			WriteByteA( values,
+						noOfValues,
+						dataProviderName,
+						placeName,
+						referenceTime,
+						validTimeFrom,
+						validTimeTo,
+						valueParameterName,
+						levelParameterName,
+						levelFrom,
+						levelTo,
+						dataVersion,
+						confidenceCode ),
+			1
+		);
+	}
+	catch (const exception &e)
+	{
+		// All exceptions thrown by libpqxx are derived from std::exception
+	    throw WdbException(e.what(), __func__);
+	}
+}
+
+
+void
 LoaderDatabaseConnection::loadField(long int dataProvider,
-								  long int placeId,
-                                  const std::string & referenceTime,
-                                  const std::string & validTimeFrom,
-                                  const std::string & validTimeTo,
-                                  int validTimeIndCode,
-                                  int valueparameter,
-								  const std::vector<wdb::database::WdbLevel> & levels,
-                                  int dataVersion,
-                                  int qualityCode,
-                                  const double * values,
-                                  unsigned int noOfValues )
+								    long int placeId,
+                                    const std::string & referenceTime,
+                                    const std::string & validTimeFrom,
+                                    const std::string & validTimeTo,
+                                    int validTimeIndCode,
+                                    int valueparameter,
+								    const std::vector<wdb::database::WdbLevel> & levels,
+                                    int dataVersion,
+                                    int qualityCode,
+                                    const double * values,
+                                    unsigned int noOfValues )
 {
     try {
 		perform(

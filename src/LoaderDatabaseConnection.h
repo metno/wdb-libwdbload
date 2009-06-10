@@ -58,6 +58,38 @@ public:
 	// OPERATIONS
     /**
      * Load a Value into the Database for the designated field.
+     * @param	values				A pointer to the array of values (doubles) in the field
+     * @param	noOfValues			The size of the values array
+     * @param	dataProviderName	The data provider name of the field
+     * @param	placeName			The place name of the fields grid description
+     * @param	referenceTime		The reference time of the field
+     * @param	validTimeFrom		Valid time from of the field
+     * @param	validTimeTo			Valid time to of the field
+     * @param	valueParameterName	The WDB name designation of the value parameter
+     * @param	levelParameterName	The WDB name designation of the level parameter
+     * @param	levelFrom			The lower level bound of the data
+     * @param	levelTo				The upper level bound of the data
+     * @param	dataVersion			The data version of the field
+     * @param	confidenceCode		WDB confidence code to be associated with the field
+     */
+    virtual void write(
+					const double * values,
+					unsigned int noOfValues,
+					const std::string & dataProviderName,
+    				const std::string & placeName,
+		   			const std::string & referenceTime,
+				    const std::string & validTimeFrom,
+				    const std::string & validTimeTo,
+				    const std::string & valueParameterName,
+					const std::string & levelParameterName,
+					float levelFrom,
+					float levelTo,
+		   			int dataVersion,
+				    int confidenceCode
+    );
+
+    /**
+     * Load a Value into the Database for the designated field.
      * @param	dataProvider	The data provider id of the field
      * @param	placeId			The place id of the fields grid description
      * @param	referenceTime	The reference time of the field

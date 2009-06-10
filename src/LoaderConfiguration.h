@@ -92,6 +92,9 @@ public:
 	{
 		bool loadPlaceDefinition;
 		std::string dataProvider; ///< The data provider name.
+		std::string placeName; /// < The place name.
+		int dataVersion; /// The Data Version
+		int confidenceCode; /// Confidence Code
 	};
 
 
@@ -122,9 +125,7 @@ protected:
 	virtual void parse_( int argc, char ** argv );
 	/** Commands to be performed after parsing arguments
 	 */
-//    virtual void postParseHook();
-
-private:
+	//    virtual void postParseHook();
 	/// Positional options
 	boost::program_options::positional_options_description positionalOptions_;
 	/// Input options

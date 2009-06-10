@@ -4,6 +4,7 @@ libwdbLoaderBase_la_SOURCES += \
 				src/wdbSetup.cpp \
 				src/transactors/loaderTransactorPlaceDefinition.h \
 				src/transactors/loaderTransactorSrid.h \
+				src/transactors/loadTransactorWriteByteA.h \
 				src/transactors/loaderTransactorValue.h \
 				src/transactors/loaderTransactorUnit.h \
 				src/transactors/loaderTransactorWci.h
