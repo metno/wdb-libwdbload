@@ -46,11 +46,52 @@ namespace wdb
 namespace database
 {
 
-LoaderDatabaseConnection::LoaderDatabaseConnection(const std::string & target, const std::string & wciUser)
+LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, const std::string & wciUser )
 	: pqxx::connection( target.c_str() )
 {
     // Initialize WCI
     perform ( BeginWci( wciUser, 0 ), 1 );
+
+    // Statement Insert value
+    prepare("WCIWriteByteA",
+    		"select "
+            "wci.write ("
+            "$1::bytea,"
+    		"$2::text,"
+    		"$3::text,"
+    		"$4::timestamp with time zone,"
+    		"$5::timestamp with time zone,"
+    		"$6::timestamp with time zone,"
+    		"$7::text,"
+    		"$8::text,"
+    		"$9::real,"
+    		"$10::real,"
+    		"$11::integer,"
+            "$12::integer"
+    		")" )
+            ("bytea", treat_binary )
+            ("varchar", treat_direct )
+            ("varchar", treat_direct )
+            ("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+            ("real", treat_direct )
+            ("real", treat_direct )
+			("int4", treat_direct )
+			("int4", treat_direct );
+
+    // Statement Get PlaceId
+    prepare("GetPlaceName",
+            "SELECT * FROM wci.getplacename ($1, $2, $3, $4, $5, $6, $7)" )
+		   ("int4", treat_direct )
+		   ("int4", treat_direct )
+		   ("real", treat_direct )
+		   ("real", treat_direct )
+		   ("real", treat_direct )
+		   ("real", treat_direct )
+		   ("varchar", treat_direct );
 
     // Statement Get PlaceId
     prepare("ReadPlaceXref",
@@ -116,41 +157,13 @@ LoaderDatabaseConnection::LoaderDatabaseConnection(const std::string & target, c
 			("int4", treat_direct )
 			("int4", treat_direct );
 
-    // Statement Insert value
-    prepare("WCIWriteByteA",
-    		"select "
-            "wci.write ("
-            "$1::bytea,"
-    		"$2::text,"
-    		"$3::text,"
-    		"$4::timestamp with time zone,"
-    		"$5::timestamp with time zone,"
-    		"$6::timestamp with time zone,"
-    		"$7::text,"
-    		"$8::text,"
-    		"$9::real,"
-    		"$10::real,"
-    		"$11::integer,"
-            "$12::integer"
-    		")" )
-            ("bytea", treat_binary )
-            ("varchar", treat_direct )
-            ("varchar", treat_direct )
-            ("varchar", treat_direct )
-			("varchar", treat_direct )
-			("varchar", treat_direct )
-			("varchar", treat_direct )
-			("varchar", treat_direct )
-            ("real", treat_direct )
-            ("real", treat_direct )
-			("int4", treat_direct )
-			("int4", treat_direct );
 
 }
 
 LoaderDatabaseConnection::~LoaderDatabaseConnection()
 {
     unprepare("WCIWriteByteA");
+    unprepare("GetPlaceName");
     unprepare("ReadPlaceXref");
     unprepare("ReadSrid");
     unprepare("WriteSrid");
@@ -196,6 +209,30 @@ LoaderDatabaseConnection::write( const double * values,
 		// All exceptions thrown by libpqxx are derived from std::exception
 	    throw WdbException(e.what(), __func__);
 	}
+}
+
+// Get PlaceId
+std::string
+LoaderDatabaseConnection::GetPlaceName( int xNum,
+                                        int yNum,
+                                        float xInc,
+                                        float yInc,
+                                        float startX,
+                                        float startY,
+									    std::string origProj )
+{
+	std::string ret;
+	try {
+		perform(
+			TGetPlaceName( ret, xNum, yNum, xInc, yInc, startX, startY, origProj ),
+			1
+		);
+	}
+	catch (const wdb::empty_result &e)
+	{
+		throw e;
+	}
+	return ret;
 }
 
 

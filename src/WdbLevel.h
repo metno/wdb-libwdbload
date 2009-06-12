@@ -63,6 +63,28 @@ namespace database
 
 /** Data structure representing a WDB Level
  */
+struct Level
+{
+	/// Parameter
+	std::string levelParameter_;
+	/// Level From
+	double levelFrom_;
+	/// Level To
+	double levelTo_;
+    /**
+     * Default Constructor
+     * @param	lP	Level Parameter Id
+     * @param 	lF	Level From
+     * @param	lT	Level To
+     */
+    Level( std::string lP, double lF, double lT )
+        : levelParameter_(lP),
+          levelFrom_(lF),
+          levelTo_(lT) { };
+};
+
+/** Data structure representing a WDB Level
+ */
 struct WdbLevel
 {
 	/// Parameter

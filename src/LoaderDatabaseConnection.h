@@ -88,6 +88,26 @@ public:
 				    int confidenceCode
     );
 
+    /** Find the PlaceName given by a combination of attributes.
+     * This function shall be overloaded for the various data types.
+     * The following parameters identify a regular grid.
+     * @param	xNum		Number of points along the x axis
+     * @param	yNum		Number of points along the y axis
+     * @param	xInc		Size of increments along the x axis
+     * @param	yInc		Size of increments along the y axis
+     * @param	startX		Start X of the grid
+     * @param	startY		Start Y of the grid
+     * @param	origProj	The original projection of the grid
+     * @return the PlaceName
+     */
+    std::string GetPlaceName( int xNum,
+                              int yNum,
+                              float xInc,
+                              float yInc,
+                              float startX,
+                              float startY,
+							  std::string origProj );
+
     /**
      * Load a Value into the Database for the designated field.
      * @param	dataProvider	The data provider id of the field
