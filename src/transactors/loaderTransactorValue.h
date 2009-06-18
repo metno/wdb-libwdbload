@@ -65,7 +65,7 @@
 
 namespace wdb {
 
-namespace database {
+namespace load {
 
 /**
  * Transactor to write the contents of a value. If the transaction fails, it logs the error and
@@ -96,7 +96,7 @@ public:
 			   const std::string valTT,
 			   int valTIC,
 			   int valParam,
-			   const std::vector <wdb::database::WdbLevel> & levels,
+			   const std::vector <wdb::load::WdbLevel> & levels,
 			   int dataVer,
 			   int conf,
 			   const double * values,
@@ -129,7 +129,7 @@ public:
 		size_t binarySize = noOfValues_ * sizeof(float) / sizeof(char);
 		const std::string binaryData(rawData, binarySize);
 		// Write
-		for ( std::vector <wdb::database::WdbLevel>::const_iterator level = levels_.begin(); level != levels_.end(); ++ level )
+		for ( std::vector <wdb::load::WdbLevel>::const_iterator level = levels_.begin(); level != levels_.end(); ++ level )
 		{
 			// Write Value
 			R = T.prepared("WriteWCI")
@@ -169,7 +169,7 @@ public:
   	{
 		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.value" );
 		log.warnStream()  << "Transaction " << Name() << " failed while trying to write: ";
-		for ( std::vector <wdb::database::WdbLevel>::const_iterator level = levels_.begin(); level != levels_.end(); ++ level )
+		for ( std::vector <wdb::load::WdbLevel>::const_iterator level = levels_.begin(); level != levels_.end(); ++ level )
 		{
 			log.warnStream()  << " ( DP: " << (dataProvider_)
 							  << " PID: " << (placeId_)
@@ -212,7 +212,7 @@ private:
     /// Codespace ID of Reference Domain
     int valueParameter_;
     /// Level measurements for the parameter
-    const std::vector <wdb::database::WdbLevel> & levels_;
+    const std::vector <wdb::load::WdbLevel> & levels_;
     /// Data Version of Value
     int dataVersion_;
     /// Confidence Code

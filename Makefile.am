@@ -18,20 +18,20 @@ AM_CXXFLAGS = -I@top_srcdir@/src/
 AM_LDFLAGS = 
 
 # Setting Targets
-lib_LTLIBRARIES = libwdbLoaderBase.la
+lib_LTLIBRARIES = libwdbLoad.la
 
 
-libwdbLoaderBase_la_SOURCES =
+libwdbLoad_la_SOURCES =
 pkginclude_HEADERS =
 
-libwdbLoaderBase_la_CPPFLAGS =$(wdb_CFLAGS)
-libwdbLoaderBase_la_LIBADD = $(wdb_LIBS)
+libwdbLoad_la_CPPFLAGS =$(wdb_CFLAGS)
+libwdbLoad_la_LIBADD = $(wdb_LIBS)
 LIBTOOL_VERSION_CURRENT = 0
 LIBTOOL_VERSION_REVISION = 0 
 LIBTOOL_VERSION_AGE = 0
-libwdbLoaderBase_la_LDFLAGS = -version-info $(LIBTOOL_VERSION_CURRENT):$(LIBTOOL_VERSION_REVISION):$(LIBTOOL_VERSION_AGE)
+libwdbLoad_la_LDFLAGS = -version-info $(LIBTOOL_VERSION_CURRENT):$(LIBTOOL_VERSION_REVISION):$(LIBTOOL_VERSION_AGE)
 
-pkgconfig_DATA = wdbLoaderBase.pc
+pkgconfig_DATA = libwdbLoad.pc
 
 WDB_VERSION = "$(VERSION)"
 
@@ -39,7 +39,7 @@ CLEANFILES =
 
 EXTRA_DIST =
 
-include src/wdb.mk
+include src/libwdbLoad.mk
 
 ###
 # Debian package related stuff

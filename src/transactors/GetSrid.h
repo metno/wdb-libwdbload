@@ -1,7 +1,7 @@
 /*
     wdb - weather and water data storage
 
-    Copyright (C) 2007 met.no
+    Copyright (C) 2007-2009 met.no
 
     Contact information:
     Norwegian Meteorological Institute
@@ -27,27 +27,24 @@
 */
 
 
-#ifndef LOADERTRANSACTORSRID_H_
-#define LOADERTRANSACTORSRID_H_
+#ifndef GETSRID_H_
+#define GETSRID_H_
 
 /**
- * @addtogroup loadingprogram
+ * @addtogroup loader
  * @{
- * @addtogroup loaderBase
+ * @addtogroup libwdbload
  * @{
  */
 
 /**
  * @file
- * Definition and implementation of srid transactors used in
- * loader applications.
+ * Definition and implementation of the GetSrid transactor
  */
 
 // PROJECT INCLUDES
 #include <wdbException.h>
-#include <wdbEmptyResultException.h>
 #include <wdbLogHandler.h>
-#include <wdbSetup.h>
 
 // SYSTEM INCLUDES
 #include <pqxx/transactor>
@@ -60,26 +57,26 @@
 
 namespace wdb {
 
-namespace database {
+namespace load {
 
 /**
  * Transactor to identify the Spatial Reference Id connected to a given PROJ definition.
- * If the SRID is not identified, the transactor will insert the spatial reference into
- * the database, and return the value given.
+ * If the SRID is not identified, an wdb::empty_result exception is thrown.
  */
-class ReadSrid : public pqxx::transactor<>
+class GetSrid : public pqxx::transactor<>
 {
 public:
 	/**
 	 * Default constructor.
 	 * @param	ret			return value (numerical srid)
-	 * @param	srid		Descriptive PROJ string (srid)
+	 * @param	proj		Descriptive PROJ string (srid)
 	 */
-	ReadSrid(long int & ret, const std::string srid) :
+	GetSrid( int & ret, const std::string proj ) :
     	pqxx::transactor<>("ReadSrid"),
     	return_(ret),
-    	srid_(srid)
+    	proj_(proj)
     {
+    	// NOOP
     }
 
 	/**
@@ -87,38 +84,9 @@ public:
 	 */
 	void operator()(argument_type &T)
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.wdb.loaderBaseLoad.dataPlaceId" );
-  		log.debugStream() << "Attempting to identify srid: " << srid_;
-		R = T.prepared("ReadSrid")
-					  (srid_).exec();
-  		if ( R.size() == 1 ) {
-  			WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.dataPlaceId" );
-			if ( R.at(0).at(0).is_null() ) {
-	 			// If we did not find an srid, insert
-	  			R = T.exec("SELECT loaderBase.maxsrid()");
-	  			if ( R.size() == 1 ) {
-	  				R.at(0).at(0).to( return_ );
-	  			}
-		  		log.debugStream() << "Did not find original srid in spatial_ref_sys";
-		       	if (return_ < getMinimumSrid()) return_ = getMinimumSrid();
-		       	return_ ++;
-				R = T.prepared("WriteSrid")
-							  (return_)
-							  ("Automatically inserted srid")
-							  (srid_).exec();
-				log.infoStream() << "Inserted new srid into spatial_ref_sys: " << return_;
-				R = T.prepared("ReadSrid")
-							  (srid_).exec();
-			}
-			else {
-				R.at(0).at(0).to( return_ );
-	 			log.debugStream() << "Identified original srid: " << return_;
-			}
-  		}
-  		if ( R.size() != 1 ) {
-  			// Technically, it should be impossible for this to happen
-  	        throw WdbException("Transaction ReadSrid returned a NULL value. This should not be possible.", __func__);
-  		}
+		std::ostringstream query;
+		query << "SELECT wci.getsrid('" << proj_ << "')";
+		R_ = T.exec( query.str() );
 	}
 
 	/**
@@ -126,7 +94,23 @@ public:
 	 */
   	void on_commit()
   	{
-		// NOOP
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.getsrid" );
+  		if ( R_.size() == 1 ) {
+  			// A row is returned
+			if ( R_.at(0).at(0).is_null() ) {
+				// NULL returned means we did not manage to identify the SRID
+				log.debugStream() << "Failed to identify the SRID of the PROJ.4 string " << proj_;
+				throw wdb::empty_result( "Could not identify the SRID" );
+			}
+			else {
+				R_.at(0).at(0).to( return_ );
+	 			log.debugStream() << "Identified the SRID as: " << return_;
+			}
+  		}
+  		if ( R_.size() != 1 ) {
+  			// Technically, it should be impossible for this to happen
+  	        throw std::logic_error( "Transactor GetSrid did not return any rows. This should not be possible" );
+  		}
   	}
 
 	/**
@@ -135,7 +119,7 @@ public:
 	 */
   	void on_abort(const char Reason[]) throw ()
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.dataPlaceId" );
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.getsrid" );
 		log.errorStream() << "Transaction " << Name() << " failed "
 				  		  << Reason;
   	}
@@ -146,21 +130,21 @@ public:
 	 */
   	void on_doubt() throw ()
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.dataPlaceId" );
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.getsrid" );
 		log.errorStream() << "Transaction " << Name() << " in indeterminate state";
   	}
 
 private:
-	/// Place Id to be returned
-	long int & return_;
+	/// SRID to be returned
+	int & return_;
 	/// The result returned by the query
-    pqxx::result R;
-	/// PROJ string (srid)
-	std::string srid_;
+    pqxx::result R_;
+	/// PROJ string
+	std::string proj_;
 
 };
 
-} // namespace database
+} // namespace load
 
 } // namespace wdb
 
@@ -170,4 +154,4 @@ private:
  * @}
  */
 
-#endif /*LOADERTRANSACTORSRID_H_*/
+#endif /* GETSRID_H_ */

@@ -58,7 +58,7 @@
 namespace wdb
 {
 
-namespace database
+namespace load
 {
 
 /** Data structure representing a WDB Level
@@ -113,7 +113,7 @@ struct WdbLevel
 
 }	// namespace wdb
 
-inline std::ostream & operator << (std::ostream & s, const wdb::database::WdbLevel & lvl)
+inline std::ostream & operator << (std::ostream & s, const wdb::load::WdbLevel & lvl)
 {
 	s << '(' << lvl.levelParameter_;
 	s << ',' << lvl.levelFrom_;

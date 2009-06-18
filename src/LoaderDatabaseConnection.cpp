@@ -27,11 +27,14 @@
  */
 
 #include "LoaderDatabaseConnection.h"
+#include "transactors/AddPlaceDefinition.h"
+#include "transactors/AddSrid.h"
+#include "transactors/BeginWci.h"
+#include "transactors/EndWci.h"
+#include "transactors/GetPlaceName.h"
+#include "transactors/GetSrid.h"
 #include "transactors/loadTransactorWriteByteA.h"
 #include "transactors/loaderTransactorValue.h"
-#include "transactors/loaderTransactorWci.h"
-#include "transactors/loaderTransactorPlaceDefinition.h"
-#include "transactors/loaderTransactorSrid.h"
 #include "transactors/loaderTransactorUnit.h"
 #include <wdbEmptyResultException.h>
 #include <pqxx/pqxx>
@@ -40,10 +43,12 @@
 using namespace std;
 using namespace pqxx;
 using namespace pqxx::prepare;
+using namespace wdb::load;
 
 namespace wdb
 {
-namespace database
+
+namespace load
 {
 
 LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, const std::string & wciUser )
@@ -93,31 +98,6 @@ LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, 
 		   ("real", treat_direct )
 		   ("varchar", treat_direct );
 
-    // Statement Get PlaceId
-    prepare("ReadPlaceXref",
-            "SELECT * FROM loaderBase.getplaceid ($1, $2, $3, $4, $5, $6, $7, $8, $9)" )
-           ("varchar", treat_direct )
-		   ("int4", treat_direct )
-		   ("int4", treat_direct )
-		   ("int4", treat_direct )
-		   ("real", treat_direct )
-		   ("real", treat_direct )
-		   ("real", treat_direct )
-		   ("real", treat_direct )
-		   ("int4", treat_direct );
-
-    // Statement getSrid
-    prepare("ReadSrid",
-            "SELECT loaderBase.getSrid( $1 )" )
-           ("int4", treat_direct );
-
-    // Statement insertSrid
-    prepare("WriteSrid",
-            "SELECT loaderBase.setSrid ($1, $2, $3)" )
-           ("int4", treat_direct )
-           ("varchar", treat_direct )
-           ("varchar", treat_direct );
-
     // Statement insertSrid
     prepare("ReadUnitData",
             "SELECT * FROM loaderBase.unitconversion ( $1 )" )
@@ -164,9 +144,6 @@ LoaderDatabaseConnection::~LoaderDatabaseConnection()
 {
     unprepare("WCIWriteByteA");
     unprepare("GetPlaceName");
-    unprepare("ReadPlaceXref");
-    unprepare("ReadSrid");
-    unprepare("WriteSrid");
     unprepare("ReadUnitData");
     perform ( EndWci( ), 1 );
 }
@@ -213,7 +190,7 @@ LoaderDatabaseConnection::write( const double * values,
 
 // Get PlaceId
 std::string
-LoaderDatabaseConnection::GetPlaceName( int xNum,
+LoaderDatabaseConnection::getPlaceName( int xNum,
                                         int yNum,
                                         float xInc,
                                         float yInc,
@@ -224,16 +201,55 @@ LoaderDatabaseConnection::GetPlaceName( int xNum,
 	std::string ret;
 	try {
 		perform(
-			TGetPlaceName( ret, xNum, yNum, xInc, yInc, startX, startY, origProj ),
+			GetPlaceName( ret, xNum, yNum, xInc, yInc, startX, startY, origProj ),
 			1
 		);
 	}
-	catch (const wdb::empty_result &e)
+	catch ( const wdb::empty_result &e )
 	{
-		throw e;
+		throw;
 	}
 	return ret;
 }
+
+// Get PlaceId
+void
+LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
+											  int xNum,
+											  int yNum,
+											  float xInc,
+											  float yInc,
+											  float startX,
+											  float startY,
+											  std::string origProj )
+{
+	/// First check that the SRID is legitimate
+	try {
+		int srid;
+		perform(
+			GetSrid( srid, origProj ),
+			1
+		);
+	}
+	catch ( const wdb::empty_result &e )
+	{
+		// No SRID was found
+		perform(
+			AddSrid( placeName, origProj ),
+			1
+		);
+		// We use the placeName as the sridName, as this makes it
+		// easier to connect which placedefinition the srid was
+		// first inserted for later. We also expect the placename
+		// to be unique.
+	}
+	// SRID has been found and is valid... attempt to insert place definiton
+	perform(
+		AddPlaceDefinition( placeName, xNum, yNum, xInc, yInc, startX, startY, origProj ),
+		1
+	);
+}
+
 
 
 void
@@ -244,7 +260,7 @@ LoaderDatabaseConnection::loadField(long int dataProvider,
                                     const std::string & validTimeTo,
                                     int validTimeIndCode,
                                     int valueparameter,
-								    const std::vector<wdb::database::WdbLevel> & levels,
+								    const std::vector<wdb::load::WdbLevel> & levels,
                                     int dataVersion,
                                     int qualityCode,
                                     const double * values,
@@ -274,90 +290,6 @@ LoaderDatabaseConnection::loadField(long int dataProvider,
 	}
 }
 
-// Get PlaceId
-long int
-LoaderDatabaseConnection::getPlaceId(const std::string & geoObj,
-                                       int geoDatum,
-                                       long int iNum,
-                                       long int jNum,
-                                       float iInc,
-                                       float jInc,
-                                       float startLat,
-                                       float startLon,
-									   int origDatum)
-{
-	long int ret;
-	try {
-		perform(
-			ReadPlaceDefinition( ret, geoObj, geoDatum, iNum, jNum, iInc, jInc, startLat, startLon, origDatum ),
-			1
-		);
-	}
-	catch (const WdbEmptyResultException &e)
-	{
-		throw;
-	}
-	catch (const exception &e)
-	{
-		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw WdbException(e.what(), __func__);
-	}
-	return ret;
-}
-
-long int
-LoaderDatabaseConnection::setPlaceId(const std::string & geoObj,
-                                       int geoDatum,
-                                       long int iNum,
-                                       long int jNum,
-                                       float iInc,
-                                       float jInc,
-                                       float startLat,
-                                       float startLon,
-                                       int origDatum)
-{
-	int osrid = 0;
-	// Get the Original SRID
-	// Insert the Place Definition
-	long int ret;
-	try {
-		perform(
-			WritePlaceDefinition( ret, geoObj, geoDatum, iNum, jNum, iInc, jInc, startLat, startLon, origDatum ),
-			1
-		);
-	}
-	catch (const exception &e)
-	{
-		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw WdbException(e.what(), __func__);
-	}
-
-	return ret;
-}
-
-int
-LoaderDatabaseConnection::getSrid( const std::string & projStr )
-{
-	long int ret;
-	try {
-		perform(
-			ReadSrid( ret, projStr ),
-			1
-		);
-	}
-	catch (const WdbEmptyResultException &e)
-	{
-		throw e;
-	}
-	catch (const exception &e)
-	{
-		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw WdbException(e.what(), __func__);
-	}
-	return ret;
-}
-
-
 void
 LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, float * term )
 {
@@ -379,5 +311,6 @@ LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, flo
 }
 
 }
+
 }
 

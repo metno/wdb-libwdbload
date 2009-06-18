@@ -1,7 +1,7 @@
 /*
     wdb - weather and water data storage
 
-    Copyright (C) 2008 met.no
+    Copyright (C) 2007 met.no
 
     Contact information:
     Norwegian Meteorological Institute
@@ -27,27 +27,24 @@
 */
 
 
-#ifndef LOADERTRANSACTORUNIT_H_
-#define LOADERTRANSACTORUNIT_H_
+#ifndef BEGINWCI_H_
+#define BEGINWCI_H_
 
 /**
- * @addtogroup loadingprogram
+ * @addtogroup loader
  * @{
- * @addtogroup loaderBase
+ * @addtogroup libwdbload
  * @{
  */
 
 /**
  * @file
- * Definition and implementation of unit transactors used in
- * loader applications.
+ * Definition and implementation of the Begin WCI Transactor
  */
 
 // PROJECT INCLUDES
 #include <wdbException.h>
-#include <wdbEmptyResultException.h>
 #include <wdbLogHandler.h>
-#include <wdbSetup.h>
 
 // SYSTEM INCLUDES
 #include <pqxx/transactor>
@@ -63,23 +60,18 @@ namespace wdb {
 namespace load {
 
 /**
- * Transactor to retrieve the SI Unit conversion information required for a given
- * unit.
+ * Transactor to Begin the WCI
  */
-class ReadUnit : public pqxx::transactor<>
+class BeginWci : public pqxx::transactor<>
 {
 public:
 	/**
 	 * Default constructor.
-	 * @param	term		term 1
-	 * @param	coeff		coefficient 1
-	 * @param	srid		Descriptive PROJ string (srid)
+	 * @param	mode 		loadmode
 	 */
-	ReadUnit(float * coeff, float * term, const std::string unit) :
-    	pqxx::transactor<>("ReadUnit"),
-    	coeff_(coeff),
-    	term_(term),
-    	unit_(unit)
+	BeginWci( const std::string & wciUser, int mode ) :
+    	pqxx::transactor<>("BeginWci"),
+    	wciUser_(wciUser), mode_(mode)
     {
     	// NOOP
     }
@@ -89,24 +81,12 @@ public:
 	 */
 	void operator()(argument_type &T)
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.unit" );
-  		log.debugStream() << "Checking unit conversion information for: " << unit_;
-		R = T.prepared("ReadUnitData")
-					  (unit_).exec();
-  		if ( R.size() == 1 ) {
-  			if ( R.at(0).at(2).is_null() ) {
-				log.debugStream() << "Did not find any conversion data for " << unit_ ;
-				//throw WdbEmptyResultException("Unit did not have any conversion data", __func__ );
-			}
-			else {
-				R.at(0).at(2).to( *coeff_ );
-  				R.at(0).at(3).to( *term_ );
-	  		}
-  		}
-  		if ( R.size() != 1 ) {
-			log.warnStream() << "Problem finding unit data for " << unit_ << ". " << R.size() << " rows returned";
-  	        throw WdbException("Transaction ReadUnit did not return correct number of values. This suggests an error in the metadata", __func__);
-  		}
+		std::ostringstream query;
+		query << "SELECT wci.begin('" << wciUser_ << "'";
+		for ( int i = 0; i < 3; ++ i)
+			query << ", " << mode_;
+		query << ')';
+		pqxx::result R = T.exec(query.str());
 	}
 
 	/**
@@ -114,7 +94,8 @@ public:
 	 */
   	void on_commit()
   	{
-		// NOOP
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.beginwci" );
+		log.infoStream() << "wci.begin call complete";
   	}
 
 	/**
@@ -123,7 +104,7 @@ public:
 	 */
   	void on_abort(const char Reason[]) throw ()
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.unit" );
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.beginwci" );
 		log.errorStream() << "Transaction " << Name() << " failed "
 				  		  << Reason;
   	}
@@ -134,23 +115,18 @@ public:
 	 */
   	void on_doubt() throw ()
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.unit" );
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.beginwci" );
 		log.errorStream() << "Transaction " << Name() << " in indeterminate state";
   	}
 
 private:
-	// Coefficient
-	float * coeff_;
-	// Term
-	float * term_;
-	/// The result returned by the query
-    pqxx::result R;
-	/// Value unit
-	std::string unit_;
-
+	// wci user for wci.begin call
+	std::string wciUser_;
+	/// Parameter ID
+	int mode_;
 };
 
-} // namespace database
+} // namespace load
 
 } // namespace wdb
 
@@ -160,4 +136,4 @@ private:
  * @}
  */
 
-#endif /*LOADERTRANSACTORSRID_H_*/
+#endif /*BEGINWCI_H_*/

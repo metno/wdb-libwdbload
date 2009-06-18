@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 AC_PREREQ(2.59)
-AC_INIT(wdbLoaderBase, 0.9.1, [wdb@met.no])
+AC_INIT(wdbLoaderBase, 0.9.3, [wdb@met.no])
 # Config
 AC_CONFIG_AUX_DIR([config])
 AC_CONFIG_SRCDIR([config/config.h.in])
@@ -94,7 +94,7 @@ AM_PROG_CC_C_O
 #-----------------------------------------------------------------------------
 
 # Configuration Files
-AC_CONFIG_FILES([Makefile wdbLoaderBase.pc])
+AC_CONFIG_FILES([Makefile libwdbLoad.pc])
 AC_OUTPUT
 
 # Print Out Summary of Configuration

@@ -45,7 +45,7 @@
 namespace wdb
 {
 
-namespace database
+namespace load
 {
 
 /** Default length of a string in WDB

@@ -56,6 +56,9 @@
 namespace wdb
 {
 
+namespace load
+{
+
 /**
  * LoaderConfiguration handles the options of the application.
  *
@@ -68,7 +71,7 @@ public:
 	/**
 	 * Default Constructor
 	 */
-	explicit LoaderConfiguration(const std::string & defaultDataProvider);
+	explicit LoaderConfiguration( const std::string & defaultDataProvider );
 	/**
 	 * Default Destructor
 	 */
@@ -137,6 +140,8 @@ protected:
 
 	const std::string defaultDataProvider_;
 };
+
+} 		// namespace load
 
 }		// namespace wdb
 

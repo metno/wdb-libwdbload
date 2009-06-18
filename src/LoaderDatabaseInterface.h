@@ -39,7 +39,84 @@ class LoaderDatabaseInterface
 public:
 	virtual ~LoaderDatabaseInterface() {}
 
-	/**
+	// OPERATIONS
+    /**
+     * Load a Value into the Database for the designated field.
+     * @param	values				A pointer to the array of values (doubles) in the field
+     * @param	noOfValues			The size of the values array
+     * @param	dataProviderName	The data provider name of the field
+     * @param	placeName			The place name of the fields grid description
+     * @param	referenceTime		The reference time of the field
+     * @param	validTimeFrom		Valid time from of the field
+     * @param	validTimeTo			Valid time to of the field
+     * @param	valueParameterName	The WDB name designation of the value parameter
+     * @param	levelParameterName	The WDB name designation of the level parameter
+     * @param	levelFrom			The lower level bound of the data
+     * @param	levelTo				The upper level bound of the data
+     * @param	dataVersion			The data version of the field
+     * @param	confidenceCode		WDB confidence code to be associated with the field
+     */
+    virtual void write(
+					const double * values,
+					unsigned int noOfValues,
+					const std::string & dataProviderName,
+    				const std::string & placeName,
+		   			const std::string & referenceTime,
+				    const std::string & validTimeFrom,
+				    const std::string & validTimeTo,
+				    const std::string & valueParameterName,
+					const std::string & levelParameterName,
+					float levelFrom,
+					float levelTo,
+		   			int dataVersion,
+				    int confidenceCode
+    ) = 0;
+
+    /** Find the PlaceName given by a combination of attributes.
+     * This function shall be overloaded for the various data types.
+     * The following parameters identify a regular grid.
+     * @param	xNum		Number of points along the x axis
+     * @param	yNum		Number of points along the y axis
+     * @param	xInc		Size of increments along the x axis
+     * @param	yInc		Size of increments along the y axis
+     * @param	startX		Start X of the grid
+     * @param	startY		Start Y of the grid
+     * @param	origProj	The original projection of the grid
+     * @return the PlaceName
+     */
+    virtual
+    std::string getPlaceName( int xNum,
+                              int yNum,
+                              float xInc,
+                              float yInc,
+                              float startX,
+                              float startY,
+							  std::string origProj ) = 0;
+
+    /** Find the PlaceName given by a combination of attributes.
+     * This function shall be overloaded for the various data types.
+     * The following parameters identify a regular grid.
+     * @param 	name		Name of the place definition to be inserted
+     * @param	xNum		Number of points along the x axis
+     * @param	yNum		Number of points along the y axis
+     * @param	xInc		Size of increments along the x axis
+     * @param	yInc		Size of increments along the y axis
+     * @param	startX		Start X of the grid
+     * @param	startY		Start Y of the grid
+     * @param	origProj	The original projection of the grid
+     * @return the PlaceName
+     */
+    virtual
+    void addPlaceDefinition( std::string placeName,
+							 int xNum,
+							 int yNum,
+							 float xInc,
+							 float yInc,
+							 float startX,
+							 float startY,
+							 std::string origProj ) = 0;
+
+    /**
      * Load a Value into the Database for the designated field.
      * @param	dataProvider	The data provider id of the field
      * @param	placeId			The place id of the fields grid description
@@ -61,64 +138,12 @@ public:
 				    const std::string & validTimeTo,
 				    int validTimeIndCode,
 				    int valueparameter,
-					const std::vector <wdb::database::WdbLevel> & levels,
+					const std::vector <wdb::load::WdbLevel> & levels,
 		   			int dataVersion,
 				    int qualityCode,
 	 			    const double * values,
 	     		    unsigned int noOfValues ) =0;
 
-    /** Get the PlaceId of a GRIB1 Field.
-     * @param	geoObj		The geometry object described as a string
-     * @param	geoDatum	The datum of the geometry object
-     * @param	iNum		Number of points along the i axis
-     * @param	jNum		Number of points along the j axis
-     * @param	iInc		Size of increments along the i axis
-     * @param	jInc		Size of increments along the j axis
-     * @param	startLon	Starting longitude of the grid
-     * @param	startLat	Starting latitude of the grid
-     * @param	origDatum	The original datum of the geometry object
-     * @return the PlaceId of the inserted PlaceDefinition
-     */
-    virtual long int getPlaceId(const std::string & geoObj,
-	                         int geoDatum,
-                             long int iNum,
-                             long int jNum,
-                             float iInc,
-                             float jInc,
-                             float startLon,
-                             float startLat,
-							 int origDatum) =0;
-
-    /**
-     * Load a new PlaceDefinition for a GRIB1 field into the database.
-     * @param	geoObj		The geometry object described as a string
-     * @param	geoDatum	The datum of the geometry object. Ignored by the postgres gribload
-     * @param	iNum		Number of points along the i axis
-     * @param	jNum		Number of points along the j axis
-     * @param	iInc		Size of increments along the i axis
-     * @param	jInc		Size of increments along the j axis
-     * @param	startLon	Starting longitude of the grid
-     * @param	startLat	Starting latitude of the grid
-     * @param	origDatum	The original datum of the geometry object
-     * @return the PlaceId of the inserted PlaceDefinition
-     */
-    virtual long int setPlaceId(const std::string & geoObj,
-                             int geoDatum,
-                             long int iNum,
-                             long int jNum,
-                             float iInc,
-                             float jInc,
-                             float startLon,
-                             float startLat,
-							 int origDatum) =0;
-
-    /**
-     * Get the SRID for a Proj String
-     * If SRID is missing in database, it is inserted by the function call
-     * @param	projStr		The PROJ definition of the Srid
-     * @return	Returns the srid
-     */
-    virtual int getSrid(const std::string & projStr) =0;
 };
 
 #endif /* LOADERDATABASEINTERFACE_H_ */

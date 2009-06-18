@@ -36,7 +36,8 @@
 
 namespace wdb
 {
-namespace database
+
+namespace load
 {
 
 
@@ -100,13 +101,35 @@ public:
      * @param	origProj	The original projection of the grid
      * @return the PlaceName
      */
-    std::string GetPlaceName( int xNum,
+    std::string getPlaceName( int xNum,
                               int yNum,
                               float xInc,
                               float yInc,
                               float startX,
                               float startY,
 							  std::string origProj );
+
+    /** Find the PlaceName given by a combination of attributes.
+     * This function shall be overloaded for the various data types.
+     * The following parameters identify a regular grid.
+     * @param 	name		Name of the place definition to be inserted
+     * @param	xNum		Number of points along the x axis
+     * @param	yNum		Number of points along the y axis
+     * @param	xInc		Size of increments along the x axis
+     * @param	yInc		Size of increments along the y axis
+     * @param	startX		Start X of the grid
+     * @param	startY		Start Y of the grid
+     * @param	origProj	The original projection of the grid
+     * @return the PlaceName
+     */
+    void addPlaceDefinition( std::string placeName,
+							 int xNum,
+							 int yNum,
+							 float xInc,
+							 float yInc,
+							 float startX,
+							 float startY,
+							 std::string origProj );
 
     /**
      * Load a Value into the Database for the designated field.
@@ -130,64 +153,11 @@ public:
 				    const std::string & validTimeTo,
 				    int validTimeIndCode,
 				    int valueparameter,
-					const std::vector<wdb::database::WdbLevel> & levels,
+					const std::vector<wdb::load::WdbLevel> & levels,
 		   			int dataVersion,
 				    int qualityCode,
 	 			    const double * values,
 	     		    unsigned int noOfValues );
-
-    /** Get the PlaceId of a field.
-     * @param	geoObj		The geometry object described as a string
-     * @param	geoDatum	The datum of the geometry object
-     * @param	iNum		Number of points along the i axis
-     * @param	jNum		Number of points along the j axis
-     * @param	iInc		Size of increments along the i axis
-     * @param	jInc		Size of increments along the j axis
-     * @param	startLon	Starting longitude of the grid
-     * @param	startLat	Starting latitude of the grid
-     * @param	origDatum	The original datum of the geometry object
-     * @return the PlaceId of the inserted PlaceDefinition
-     */
-    long int getPlaceId(const std::string & geoObj,
-	                         int geoDatum,
-                             long int iNum,
-                             long int jNum,
-                             float iInc,
-                             float jInc,
-                             float startLon,
-                             float startLat,
-							 int origDatum);
-
-    /**
-     * Load a new PlaceDefinition for a field into the database.
-     * @param	geoObj		The geometry object described as a string
-     * @param	geoDatum	The datum of the geometry object. Ignored by the postgres gribload
-     * @param	iNum		Number of points along the i axis
-     * @param	jNum		Number of points along the j axis
-     * @param	iInc		Size of increments along the i axis
-     * @param	jInc		Size of increments along the j axis
-     * @param	startLon	Starting longitude of the grid
-     * @param	startLat	Starting latitude of the grid
-     * @param	origDatum	The original datum of the geometry object
-     * @return the PlaceId of the inserted PlaceDefinition
-     */
-    long int setPlaceId(const std::string & geoObj,
-                             int geoDatum,
-                             long int iNum,
-                             long int jNum,
-                             float iInc,
-                             float jInc,
-                             float startLon,
-                             float startLat,
-							 int origDatum);
-
-    /**
-     * Get the SRID for a Proj String
-     * If SRID is missing in database, it is inserted by the function call
-     * @param	projStr		The PROJ definition of the Srid
-     * @return	Returns the srid
-     */
-    int getSrid(const std::string & projStr);
 
     /**
      * Read the Unit Data
@@ -201,6 +171,7 @@ public:
 };
 
 }
+
 }
 
 #endif /* LOADERDATABASECONNECTION_H_ */

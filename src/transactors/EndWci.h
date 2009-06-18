@@ -27,20 +27,19 @@
 */
 
 
-#ifndef LOADERTRANSACTORWCI_H_
-#define LOADERTRANSACTORWCI_H_
+#ifndef ENDWCI_H_
+#define ENDWCI_H_
 
 /**
- * @addtogroup loadingprogram
+ * @addtogroup loader
  * @{
- * @addtogroup loaderBase
+ * @addtogroup libwdbload
  * @{
  */
 
 /**
  * @file
- * Definition and implementation of the parameter retrieval transactor used in
- * loader applications.
+ * Definition and implementation of the EndWCI Transactor
  */
 
 // PROJECT INCLUDES
@@ -50,89 +49,13 @@
 // SYSTEM INCLUDES
 #include <pqxx/transactor>
 #include <pqxx/result>
-#include <iostream>
-#include <string>
-#include <vector>
 
 // FORWARD REFERENCES
 //
 
 namespace wdb {
 
-namespace database {
-
-/**
- * Transactor to Begin the WCI
- */
-class BeginWci : public pqxx::transactor<>
-{
-public:
-	/**
-	 * Default constructor.
-	 * @param	mode 		loadmode
-	 */
-	BeginWci( const std::string & wciUser, int mode ) :
-    	pqxx::transactor<>("BeginWci"),
-    	wciUser_(wciUser), mode_(mode)
-    {
-    	// NOOP
-    }
-
-	/**
-	 * Functor. The transactors functor executes the query.
-	 */
-	void operator()(argument_type &T)
-  	{
-		std::ostringstream query;
-		query << "SELECT wci.begin('" << wciUser_ << "'";
-		for ( int i = 0; i < 3; ++ i)
-			query << ", " << mode_;
-		query << ')';
-
-		R = T.exec(query.str());
-	}
-
-	/**
-	 * Commit handler. This is called if the transaction succeeds.
-	 */
-  	void on_commit()
-  	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.wci" );
-		log.infoStream() << "wci.begin call complete";
-  	}
-
-	/**
-	 * Abort handler. This is called if the transaction fails.
-	 * @param	Reason	The reason for the abort of the call
-	 */
-  	void on_abort(const char Reason[]) throw ()
-  	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.wci" );
-		log.errorStream() << "Transaction " << Name() << " failed "
-				  		  << Reason;
-  	}
-
-	/**
-	 * Special error handler. This is called if the transaction fails with an unexpected error.
-	 * Read the libpqxx documentation on transactors for details.
-	 */
-  	void on_doubt() throw ()
-  	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.wci" );
-		log.errorStream() << "Transaction " << Name() << " in indeterminate state";
-  	}
-
-private:
-	/// Parameter ID
-	int mode_;
-
-	// wci user for wci.begin call
-	std::string wciUser_;
-
-	/// Result
-   	pqxx::result R;
-
-};
+namespace load {
 
 /**
  * Transactor to Close down WCI
@@ -155,7 +78,7 @@ public:
 	 */
 	void operator()(argument_type &T)
   	{
-		R = T.exec("SELECT wci.end ( );");
+		pqxx::result R = T.exec("SELECT wci.end ( );");
 	}
 
 	/**
@@ -163,7 +86,7 @@ public:
 	 */
   	void on_commit()
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.wci" );
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.endwci" );
 		log.infoStream() << "wci.end call complete";
   	}
 
@@ -173,7 +96,7 @@ public:
 	 */
   	void on_abort(const char Reason[]) throw ()
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.wci" );
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.endwci" );
 		log.errorStream() << "Transaction " << Name() << " failed "
 				  		  << Reason;
   	}
@@ -184,18 +107,14 @@ public:
 	 */
   	void on_doubt() throw ()
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.wci" );
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.endwci" );
 		log.errorStream() << "Transaction " << Name() << " in indeterminate state";
   	}
-
-private:
-	/// Result
-   	pqxx::result R;
 
 };
 
 
-} // namespace database
+} // namespace load
 
 } // namespace wdb
 
@@ -205,4 +124,4 @@ private:
  * @}
  */
 
-#endif /*LOADERTRANSACTORWCI_H_*/
+#endif /*ENDWCI_H_*/

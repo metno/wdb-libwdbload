@@ -44,47 +44,47 @@
 // SYSTEM INCLUDES
 //
 
-using namespace wdb::database;
+using namespace wdb::load;
 
 int
-wdb::database::getDefaultSrid()
+wdb::load::getDefaultSrid()
 {
     // +proj=longlat +ellps=WGS84 +no_defs
     return 4030; // See spatial_ref_type in the database
 }
 
 int
-wdb::database::getMinimumSrid()
+wdb::load::getMinimumSrid()
 {
     return 50000;
 }
 
 int
-wdb::database::getDefaultPlaceIndeterminateCode()
+wdb::load::getDefaultPlaceIndeterminateCode()
 {
     return 0;
 };
 
 int
-wdb::database::getDefaultLevelIndeterminateCode()
+wdb::load::getDefaultLevelIndeterminateCode()
 {
     return 0;
 };
 
 int
-wdb::database::getDefaultValidTimeIndeterminateCode()
+wdb::load::getDefaultValidTimeIndeterminateCode()
 {
     return 0;
 }
 
 int
-wdb::database::getDefaultQualityCode()
+wdb::load::getDefaultQualityCode()
 {
     return 0;
 }
 
 const char *
-wdb::database::getDefaultQualityStage()
+wdb::load::getDefaultQualityStage()
 {
      return "FQP00";
 }

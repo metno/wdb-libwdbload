@@ -65,7 +65,7 @@
 
 namespace wdb {
 
-namespace database {
+namespace load {
 
 /**
  * Transactor to write a binary value. If the transaction fails,

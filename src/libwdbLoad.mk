@@ -1,13 +1,16 @@
-libwdbLoaderBase_la_SOURCES += \
+libwdbLoad_la_SOURCES += \
 				src/LoaderConfiguration.cpp \
 				src/LoaderDatabaseConnection.cpp \
 				src/wdbSetup.cpp \
-				src/transactors/loaderTransactorPlaceDefinition.h \
-				src/transactors/loaderTransactorSrid.h \
+				src/transactors/AddPlaceDefinition.h \
+				src/transactors/AddSrid.h \
+				src/transactors/GetPlaceName.h \
+				src/transactors/GetSrid.h \
+				src/transactors/BeginWci.h \
+				src/transactors/EndWci.h \
 				src/transactors/loadTransactorWriteByteA.h \
 				src/transactors/loaderTransactorValue.h \
-				src/transactors/loaderTransactorUnit.h \
-				src/transactors/loaderTransactorWci.h
+				src/transactors/loaderTransactorUnit.h
 	
 pkginclude_HEADERS += \
 				src/LoaderDatabaseInterface.h \

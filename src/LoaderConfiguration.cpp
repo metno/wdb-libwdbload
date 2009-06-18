@@ -49,7 +49,7 @@
 
 using namespace std;
 using namespace boost::program_options;
-using namespace wdb;
+using namespace wdb::load;
 
 // Support Functions
 namespace
@@ -94,7 +94,7 @@ getLoading( LoaderConfiguration::LoadingOptions & out, const std::string & defau
 {
     options_description loading("Loading");
     loading.add_options()
-    ( "loadPlaceDefinition", bool_switch( & out.loadPlaceDefinition ), "Load place definition" )
+    ( "loadPlaceDefinition", bool_switch( & out.loadPlaceDefinition )->default_value( false ), "Load place definition" )
 	( "dataprovider", value<string>( & out.dataProvider )->default_value( defaultDataProvider ), "WCI Data Provider Name" )
 	( "placename", value<string>( & out.placeName ), "WCI Place Name" )
 	( "dataversion", value<int>( & out.dataVersion )->default_value( 0 ), "WCI Data Version (-1 forces increment)" )
