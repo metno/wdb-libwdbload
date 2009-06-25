@@ -10,7 +10,7 @@ libwdbLoad_la_SOURCES += \
 				src/transactors/EndWci.h \
 				src/transactors/loadTransactorWriteByteA.h \
 				src/transactors/loaderTransactorValue.h \
-				src/transactors/loaderTransactorUnit.h
+				src/transactors/InfoParameterUnit.h
 	
 pkginclude_HEADERS += \
 				src/LoaderDatabaseInterface.h \

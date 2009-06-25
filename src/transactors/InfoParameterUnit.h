@@ -45,7 +45,6 @@
 
 // PROJECT INCLUDES
 #include <wdbException.h>
-#include <wdbEmptyResultException.h>
 #include <wdbLogHandler.h>
 #include <wdbSetup.h>
 
@@ -66,7 +65,7 @@ namespace load {
  * Transactor to retrieve the SI Unit conversion information required for a given
  * unit.
  */
-class ReadUnit : public pqxx::transactor<>
+class InfoParameterUnit : public pqxx::transactor<>
 {
 public:
 	/**
@@ -75,8 +74,8 @@ public:
 	 * @param	coeff		coefficient 1
 	 * @param	srid		Descriptive PROJ string (srid)
 	 */
-	ReadUnit(float * coeff, float * term, const std::string unit) :
-    	pqxx::transactor<>("ReadUnit"),
+	InfoParameterUnit(float * coeff, float * term, const std::string unit) :
+    	pqxx::transactor<>("InfoParameterUnit"),
     	coeff_(coeff),
     	term_(term),
     	unit_(unit)
@@ -91,12 +90,11 @@ public:
   	{
 		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.unit" );
   		log.debugStream() << "Checking unit conversion information for: " << unit_;
-		R = T.prepared("ReadUnitData")
+		R = T.prepared("InfoParameterUnit")
 					  (unit_).exec();
   		if ( R.size() == 1 ) {
   			if ( R.at(0).at(2).is_null() ) {
 				log.debugStream() << "Did not find any conversion data for " << unit_ ;
-				//throw WdbEmptyResultException("Unit did not have any conversion data", __func__ );
 			}
 			else {
 				R.at(0).at(2).to( *coeff_ );
@@ -105,7 +103,7 @@ public:
   		}
   		if ( R.size() != 1 ) {
 			log.warnStream() << "Problem finding unit data for " << unit_ << ". " << R.size() << " rows returned";
-  	        throw WdbException("Transaction ReadUnit did not return correct number of values. This suggests an error in the metadata", __func__);
+  	        throw std::runtime_error("Transaction ReadUnit did not return correct number of values. This suggests an error in the metadata");
   		}
 	}
 

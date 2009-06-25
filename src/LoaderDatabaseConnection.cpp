@@ -33,10 +33,9 @@
 #include "transactors/EndWci.h"
 #include "transactors/GetPlaceName.h"
 #include "transactors/GetSrid.h"
+#include "transactors/InfoParameterUnit.h"
 #include "transactors/loadTransactorWriteByteA.h"
 #include "transactors/loaderTransactorValue.h"
-#include "transactors/loaderTransactorUnit.h"
-#include <wdbEmptyResultException.h>
 #include <pqxx/pqxx>
 #include <stdexcept>
 
@@ -99,8 +98,8 @@ LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, 
 		   ("varchar", treat_direct );
 
     // Statement insertSrid
-    prepare("ReadUnitData",
-            "SELECT * FROM loaderBase.unitconversion ( $1 )" )
+    prepare("InfoParameterUnit",
+            "SELECT * FROM wci.info ( $1, NULL::wci.infoparameterunit )" )
            ("varchar", treat_direct );
 
     // Statement Insert value
@@ -144,7 +143,7 @@ LoaderDatabaseConnection::~LoaderDatabaseConnection()
 {
     unprepare("WCIWriteByteA");
     unprepare("GetPlaceName");
-    unprepare("ReadUnitData");
+    unprepare("InfoParameterUnit");
     perform ( EndWci( ), 1 );
 }
 
@@ -184,7 +183,7 @@ LoaderDatabaseConnection::write( const double * values,
 	catch (const exception &e)
 	{
 		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw WdbException(e.what(), __func__);
+	    throw;
 	}
 }
 
@@ -286,7 +285,7 @@ LoaderDatabaseConnection::loadField(long int dataProvider,
 	catch (const exception &e)
 	{
 		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw WdbException(e.what(), __func__);
+	    throw;
 	}
 }
 
@@ -295,18 +294,14 @@ LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, flo
 {
 	try {
 		perform(
-			ReadUnit( coeff, term, unit ),
+			InfoParameterUnit( coeff, term, unit ),
 			1
 		);
-	}
-	catch (const WdbEmptyResultException &e)
-	{
-		// NOOP
 	}
 	catch (const exception &e)
 	{
 		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw WdbException(e.what(), __func__);
+	    throw e;
 	}
 }
 

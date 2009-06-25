@@ -15,6 +15,6 @@ AS_IF([test "$wdb_conf" = no],
 
 AC_SUBST([wdb_CONFIG], [`$wdb_conf --bindir`/wdbConfiguration])
 AC_SUBST([wdb_CFLAGS], [`$wdb_conf --cflags`])
-AC_SUBST([wdb_LIBS], ["-L`$wdb_conf --libdir` -lwdbConfiguration -lwdbProjection -lwdbException -lwdbLogHandler"])
-AC_SUBST([wdb_PKGLIBS], ["-L`$wdb_conf --libdir` -lwdbConfiguration -lwdbProjection -lwdbException -lwdbLogHandler -L`$wdb_conf --libdir`/wdb -ltestConfiguration"])
+AC_SUBST([wdb_LIBS], ["-L`$wdb_conf --libdir` -lwdbConfig -lwdbProj -lwdbExcept -lwdbLog"])
+AC_SUBST([wdb_PKGLIBS], ["-L`$wdb_conf --libdir` -lwdbConfig -lwdbProj -lwdbExcept -lwdbLog -L`$wdb_conf --libdir`/wdb -lwdbTest"])
 ])
