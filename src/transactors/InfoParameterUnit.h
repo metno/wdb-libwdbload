@@ -102,8 +102,8 @@ public:
 	  		}
   		}
   		if ( R.size() != 1 ) {
-			log.warnStream() << "Problem finding unit data for " << unit_ << ". " << R.size() << " rows returned";
-  	        throw std::runtime_error("Transaction ReadUnit did not return correct number of values. This suggests an error in the metadata");
+			log.errorStream() << "Problem finding unit data for " << unit_ << ". " << R.size() << " rows returned";
+  	        throw std::runtime_error("Transaction InfoParameterUnit did not return correct number of values. This suggests an error in the metadata.");
   		}
 	}
 
