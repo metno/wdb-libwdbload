@@ -1,4 +1,4 @@
-Source: wdbloaderbase  
+Source: libwdbload
 Section: science
 Priority: extra
 Maintainer: Vegard Bønes <wdb@met.no>
@@ -7,14 +7,14 @@ Build-Depends: debhelper (>= 5), autoconf,
 Build-Conflicts: autoconf2.13, automake1.4
 Standards-Version: 3.7.2
 
-Package: wdbloaderbase-dev
+Package: libwdbload-dev
 Section: libdevel
 Architecture: any
-Depends: wdbloaderbase (= ${Source-Version})
+Depends: libwdbload (= ${Source-Version})
 Description: Base libarary for loading data into wdb
  Provides basic functionality for loading data into the wdb database
 
-Package: wdbloaderbase
+Package: libwdbload 
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, wdb|wdb-psql-8.3
 Description: Base libarary for loading data into wdb

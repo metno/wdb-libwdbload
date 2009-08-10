@@ -1,3 +1,15 @@
+libwdbload (0.9.4-1) hardy; urgency=low
+
+  * New upstream release 
+
+ -- Vegard B�nes <vegardb@dev-vm133>  Fri, 07 Aug 2009 10:23:02 +0000
+
+wdbloaderbase (0.9.2-1) hardy; urgency=low
+
+  * New upstream release
+
+ -- Vegard B�nes <vegardb@met.no>  Mon, 15 Jun 2009 14:20:24 +0000
+
 wdbloaderbase (0.9.1-1) hardy; urgency=low
 
   * New upstream release
