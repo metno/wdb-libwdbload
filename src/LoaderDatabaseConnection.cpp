@@ -319,9 +319,18 @@ void LoaderDatabaseConnection::setup_(const std::string & wciUser)
 
 std::string LoaderDatabaseConnection::dataProvider_(const std::string & given) const
 {
-	if ( config_ and not config_->loading().dataProvider.empty() )
-		return config_->loading().dataProvider;
+	if ( config_ )
+	{
+		if ( not config_->loading().dataProvider.empty() )
+			return config_->loading().dataProvider;
+		else if ( not config_->loading().defaultDataProvider.empty() )
+			return config_->loading().defaultDataProvider;
+	}
 	return given;
+
+//	if ( config_ and not config_->loading().dataProvider.empty() )
+//		return config_->loading().dataProvider;
+//	return given;
 }
 
 std::string LoaderDatabaseConnection::placeName_(const std::string & given) const

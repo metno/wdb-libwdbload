@@ -71,7 +71,7 @@ public:
 	/**
 	 * Default Constructor
 	 */
-	explicit LoaderConfiguration( const std::string & defaultDataProvider );
+	explicit LoaderConfiguration( const std::string & defaultDataProvider = "");
 	/**
 	 * Default Destructor
 	 */
