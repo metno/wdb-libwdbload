@@ -27,6 +27,7 @@
  */
 
 #include "LoaderDatabaseConnection.h"
+#include "LoaderConfiguration.h"
 #include "transactors/AddPlaceDefinition.h"
 #include "transactors/AddSrid.h"
 #include "transactors/BeginWci.h"
@@ -50,93 +51,16 @@ namespace wdb
 namespace load
 {
 
-LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, const std::string & wciUser )
-	: pqxx::connection( target.c_str() )
+LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & config)
+	: pqxx::connection(config.database().pqDatabaseConnection()), config_(new LoaderConfiguration(config))
 {
-    // Initialize WCI
-    perform ( BeginWci( wciUser, 0 ), 1 );
+	setup_(config.database().user);
+}
 
-    // Statement Insert value
-    prepare("WCIWriteByteA",
-    		"select "
-            "wci.write ("
-            "$1::bytea,"
-    		"$2::text,"
-    		"$3::text,"
-    		"$4::timestamp with time zone,"
-    		"$5::timestamp with time zone,"
-    		"$6::timestamp with time zone,"
-    		"$7::text,"
-    		"$8::text,"
-    		"$9::real,"
-    		"$10::real,"
-    		"$11::integer,"
-            "$12::integer"
-    		")" )
-            ("bytea", treat_binary )
-            ("varchar", treat_direct )
-            ("varchar", treat_direct )
-            ("varchar", treat_direct )
-			("varchar", treat_direct )
-			("varchar", treat_direct )
-			("varchar", treat_direct )
-			("varchar", treat_direct )
-            ("real", treat_direct )
-            ("real", treat_direct )
-			("int4", treat_direct )
-			("int4", treat_direct );
-
-    // Statement Get PlaceId
-    prepare("GetPlaceName",
-            "SELECT * FROM wci.getplacename ($1, $2, $3, $4, $5, $6, $7)" )
-		   ("int4", treat_direct )
-		   ("int4", treat_direct )
-		   ("real", treat_direct )
-		   ("real", treat_direct )
-		   ("real", treat_direct )
-		   ("real", treat_direct )
-		   ("varchar", treat_direct );
-
-    // Statement insertSrid
-    prepare("InfoParameterUnit",
-            "SELECT * FROM wci.info ( $1, NULL::wci.infoparameterunit )" )
-           ("varchar", treat_direct );
-
-    // Statement Insert value
-    prepare("WriteWCI",
-    		"select "
-            "wci.write ("
-            "$1::bytea,"
-    		"$2::bigint,"
-    		"$3::bigint,"
-    		"$4::timestamp with time zone,"
-    		"$5::timestamp with time zone,"
-    		"$6::timestamp with time zone,"
-    		"$7::integer,"
-    		"$8::integer,"
-    		"$9::integer,"
-    		"$10::real,"
-    		"$11::real,"
-    		"$12::integer,"
-    		"$13::integer,"
-            "$14::integer"
-    		")" )
-            ("bytea", treat_binary )
-            ("int8", treat_direct )
-            ("int8", treat_direct )
-            ("varchar", treat_direct )
-			("varchar", treat_direct )
-			("varchar", treat_direct )
-			("int4", treat_direct )
-			("int4", treat_direct )
-            ("int4", treat_direct )
-            ("real", treat_direct )
-            ("real", treat_direct )
-			("int4", treat_direct )
-			("int4", treat_direct )
-			("int4", treat_direct );
-
-
+LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, const std::string & wciUser )
+	: pqxx::connection( target.c_str() ), config_(0)
+{
+	setup_(wciUser);
 }
 
 LoaderDatabaseConnection::~LoaderDatabaseConnection()
@@ -145,6 +69,8 @@ LoaderDatabaseConnection::~LoaderDatabaseConnection()
     unprepare("GetPlaceName");
     unprepare("InfoParameterUnit");
     perform ( EndWci( ), 1 );
+
+    delete config_;
 }
 
 void
@@ -166,8 +92,8 @@ LoaderDatabaseConnection::write( const double * values,
 		perform(
 			WriteByteA( values,
 						noOfValues,
-						dataProviderName,
-						placeName,
+						dataProvider_(dataProviderName),
+						placeName_(placeName),
 						referenceTime,
 						validTimeFrom,
 						validTimeTo,
@@ -175,8 +101,8 @@ LoaderDatabaseConnection::write( const double * values,
 						levelParameterName,
 						levelFrom,
 						levelTo,
-						dataVersion,
-						confidenceCode ),
+						dataVersion_(dataVersion),
+						confidenceCode_(confidenceCode) ),
 			1
 		);
 	}
@@ -234,7 +160,7 @@ LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
 	{
 		// No SRID was found
 		perform(
-			AddSrid( placeName, origProj ),
+			AddSrid( placeName_(placeName), origProj ),
 			1
 		);
 		// We use the placeName as the sridName, as this makes it
@@ -244,7 +170,7 @@ LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
 	}
 	// SRID has been found and is valid... attempt to insert place definiton
 	perform(
-		AddPlaceDefinition( placeName, xNum, yNum, xInc, yInc, startX, startY, origProj ),
+		AddPlaceDefinition( placeName_(placeName), xNum, yNum, xInc, yInc, startX, startY, origProj ),
 		1
 	);
 }
@@ -275,8 +201,8 @@ LoaderDatabaseConnection::loadField(long int dataProvider,
 						validTimeIndCode,
 						valueparameter,
 						levels,
-						dataVersion,
-						qualityCode,
+						dataVersion_(dataVersion),
+						confidenceCode_(qualityCode),
 						values,
 	  					noOfValues ),
 			1
@@ -303,6 +229,120 @@ LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, flo
 		// All exceptions thrown by libpqxx are derived from std::exception
 	    throw e;
 	}
+}
+
+void LoaderDatabaseConnection::setup_(const std::string & wciUser)
+{
+	// Initialize WCI
+	perform ( BeginWci( wciUser, 0 ), 1 );
+
+	// Statement Insert value
+	prepare("WCIWriteByteA",
+			"select "
+			"wci.write ("
+			"$1::bytea,"
+			"$2::text,"
+			"$3::text,"
+			"$4::timestamp with time zone,"
+			"$5::timestamp with time zone,"
+			"$6::timestamp with time zone,"
+			"$7::text,"
+			"$8::text,"
+			"$9::real,"
+			"$10::real,"
+			"$11::integer,"
+			"$12::integer"
+			")" )
+			("bytea", treat_binary )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("real", treat_direct )
+			("real", treat_direct )
+			("int4", treat_direct )
+			("int4", treat_direct );
+
+	// Statement Get PlaceId
+	prepare("GetPlaceName",
+			"SELECT * FROM wci.getplacename ($1, $2, $3, $4, $5, $6, $7)" )
+		   ("int4", treat_direct )
+		   ("int4", treat_direct )
+		   ("real", treat_direct )
+		   ("real", treat_direct )
+		   ("real", treat_direct )
+		   ("real", treat_direct )
+		   ("varchar", treat_direct );
+
+	// Statement insertSrid
+	prepare("InfoParameterUnit",
+			"SELECT * FROM wci.info ( $1, NULL::wci.infoparameterunit )" )
+		   ("varchar", treat_direct );
+
+	// Statement Insert value
+	prepare("WriteWCI",
+			"select "
+			"wci.write ("
+			"$1::bytea,"
+			"$2::bigint,"
+			"$3::bigint,"
+			"$4::timestamp with time zone,"
+			"$5::timestamp with time zone,"
+			"$6::timestamp with time zone,"
+			"$7::integer,"
+			"$8::integer,"
+			"$9::integer,"
+			"$10::real,"
+			"$11::real,"
+			"$12::integer,"
+			"$13::integer,"
+			"$14::integer"
+			")" )
+			("bytea", treat_binary )
+			("int8", treat_direct )
+			("int8", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("varchar", treat_direct )
+			("int4", treat_direct )
+			("int4", treat_direct )
+			("int4", treat_direct )
+			("real", treat_direct )
+			("real", treat_direct )
+			("int4", treat_direct )
+			("int4", treat_direct )
+			("int4", treat_direct );
+}
+
+std::string LoaderDatabaseConnection::dataProvider_(const std::string & given) const
+{
+	if ( config_ and not config_->loading().dataProvider.empty() )
+		return config_->loading().dataProvider;
+	return given;
+}
+
+std::string LoaderDatabaseConnection::placeName_(const std::string & given) const
+{
+	if ( config_ and not config_->loading().placeName.empty() )
+		return config_->loading().placeName;
+	return given;
+}
+
+int LoaderDatabaseConnection::dataVersion_(int given) const
+{
+	if ( config_ )
+		return config_->loading().dataVersion;
+	return given;
+}
+
+int LoaderDatabaseConnection::confidenceCode_(int given) const
+{
+	if ( config_ )
+		return config_->loading().confidenceCode;
+	return given;
 }
 
 }

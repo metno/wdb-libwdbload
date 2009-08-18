@@ -95,6 +95,12 @@ public:
 	{
 		bool loadPlaceDefinition;
 		std::string dataProvider; ///< The data provider name.
+
+		/**
+		 * In case you use the LoaderDatabaseConnection, this value will be
+		 * chosen automatically if dataProvider is empty
+		 */
+		std::string defaultDataProvider;
 		std::string placeName; /// < The place name.
 		int dataVersion; /// The Data Version
 		int confidenceCode; /// Confidence Code

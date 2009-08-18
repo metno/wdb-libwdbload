@@ -39,6 +39,7 @@ namespace wdb
 
 namespace load
 {
+class LoaderConfiguration;
 
 
 /**
@@ -53,6 +54,9 @@ namespace load
 class LoaderDatabaseConnection : public pqxx::connection, public LoaderDatabaseInterface
 {
 public:
+	explicit LoaderDatabaseConnection(const LoaderConfiguration & config);
+
+	/// @deprecated
 	LoaderDatabaseConnection(const std::string & target, const std::string & wciUser);
 	virtual ~LoaderDatabaseConnection();
 
@@ -168,6 +172,17 @@ public:
      * @param	term2		Second term of conversion
      */
     void readUnit( const std::string & unit, float * coeff, float * term );
+
+private:
+    void setup_(const std::string & wciUser);
+
+	std::string dataProvider_(const std::string & given) const;
+	std::string placeName_(const std::string & given) const;
+	int dataVersion_(int given) const;
+	int confidenceCode_(int given) const;
+
+
+    const LoaderConfiguration * config_;
 };
 
 }

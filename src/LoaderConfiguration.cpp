@@ -92,13 +92,14 @@ getOutput( LoaderConfiguration::OutputOptions & out )
 options_description
 getLoading( LoaderConfiguration::LoadingOptions & out, const std::string & defaultDataProvider )
 {
+	out.defaultDataProvider = defaultDataProvider;
     options_description loading("Loading");
     loading.add_options()
     ( "loadPlaceDefinition", bool_switch( & out.loadPlaceDefinition )->default_value( false ), "Load place definition" )
-	( "dataprovider", value<string>( & out.dataProvider )->default_value( defaultDataProvider ), "WCI Data Provider Name" )
-	( "placename", value<string>( & out.placeName ), "WCI Place Name" )
-	( "dataversion", value<int>( & out.dataVersion )->default_value( 0 ), "WCI Data Version (-1 forces increment)" )
-	( "confidencecode", value<int>( & out.confidenceCode )->default_value( 0 ), "WCI Confidence Code" )
+	( "dataprovider", value<string>( & out.dataProvider ), "Override WCI Data Provider Name" )
+	( "placename", value<string>( & out.placeName ), "Attempt to override WCI Place Name" )
+	( "dataversion", value<int>( & out.dataVersion )->default_value( 0 ), "Force a specific WCI Data Version (-1 forces increment)" )
+	( "confidencecode", value<int>( & out.confidenceCode )->default_value( 0 ), "Set WCI Confidence Code" )
     ;
 
     return loading;
