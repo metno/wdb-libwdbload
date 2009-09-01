@@ -98,7 +98,9 @@ getLoading( LoaderConfiguration::LoadingOptions & out, const std::string & defau
     ( "loadPlaceDefinition", bool_switch( & out.loadPlaceDefinition )->default_value( false ), "Load place definition" )
 	( "dataprovider", value<string>( & out.dataProvider ), "Override WCI Data Provider Name" )
 	( "placename", value<string>( & out.placeName ), "Attempt to override WCI Place Name" )
-	( "dataversion", value<int>( & out.dataVersion )->default_value( 0 ), "Force a specific WCI Data Version (-1 forces increment)" )
+	// TODO Fix magic number
+	// KLUDGE Magic number - should not be used
+	( "dataversion", value<int>( & out.dataVersion )->default_value( -999 ), "Force a specific WCI Data Version (-1 forces increment, and -999 is unset :S)" )
 	( "confidencecode", value<int>( & out.confidenceCode )->default_value( 0 ), "Set WCI Confidence Code" )
     ;
 

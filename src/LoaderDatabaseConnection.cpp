@@ -343,7 +343,13 @@ std::string LoaderDatabaseConnection::placeName_(const std::string & given) cons
 int LoaderDatabaseConnection::dataVersion_(int given) const
 {
 	if ( config_ )
-		return config_->loading().dataVersion;
+	{
+		int dataVersion = config_->loading().dataVersion;
+		// TODO Fix magic number
+		// KLUDGE Magic number - should not be used
+		if ( dataVersion != -999 )
+			return dataVersion;
+	}
 	return given;
 }
 
