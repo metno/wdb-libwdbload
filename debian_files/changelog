@@ -1,3 +1,9 @@
+libwdbload1 (0.9.4-2) hardy; urgency=low
+
+  * bugfixes
+
+ -- Vegard B�nes <vegard.bones@met.no>  Tue, 01 Sep 2009 12:49:39 +0000
+
 libwdbload1 (0.9.4-1) hardy; urgency=low
 
   * new upstream release
