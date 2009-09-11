@@ -33,6 +33,7 @@
 #include "WdbLevel.h"
 #include <pqxx/connection>
 #include <string>
+#include <limits>
 
 namespace wdb
 {
@@ -92,6 +93,11 @@ public:
 		   			int dataVersion,
 				    int confidenceCode
     );
+
+    /**
+     * Get the value to use for "undefined" entries in a grid.
+     */
+    double getUndefinedValue() const { return std::numeric_limits<double>::quiet_NaN(); }
 
     /** Find the PlaceName given by a combination of attributes.
      * This function shall be overloaded for the various data types.
