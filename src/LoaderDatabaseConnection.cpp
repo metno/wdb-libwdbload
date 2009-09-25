@@ -28,7 +28,7 @@
 
 #include "LoaderDatabaseConnection.h"
 #include "LoaderConfiguration.h"
-#include "transactors/AddPlaceDefinition.h"
+#include "transactors/AddPlaceRegularGrid.h"
 #include "transactors/AddSrid.h"
 #include "transactors/BeginWci.h"
 #include "transactors/EndWci.h"
@@ -138,7 +138,7 @@ LoaderDatabaseConnection::getPlaceName( int xNum,
 }
 
 // Get PlaceId
-void
+std::string
 LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
 											  int xNum,
 											  int yNum,
@@ -169,10 +169,13 @@ LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
 		// to be unique.
 	}
 	// SRID has been found and is valid... attempt to insert place definiton
+	// If we are in a non-default namespace, insert app-generated placename
 	perform(
 		AddPlaceDefinition( placeName_(placeName), xNum, yNum, xInc, yInc, startX, startY, origProj ),
 		1
 	);
+	// Finally, get the placeName again...
+	return getPlaceName( xNum, yNum, xInc, yInc, startX, startY, origProj );
 }
 
 

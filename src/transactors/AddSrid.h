@@ -74,7 +74,7 @@ public:
 	 */
 	AddSrid( const std::string & sridname,
 			 const std::string & proj ) :
-    	pqxx::transactor<>("AddPlaceDefinition"),
+    	pqxx::transactor<>("AddSrid"),
     	sridName_(sridname),
 		proj_(proj)
     {

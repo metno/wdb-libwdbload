@@ -101,7 +101,7 @@ public:
 	void operator()(argument_type &T)
   	{
 		std::ostringstream query;
-		query << "SELECT wci.addplacedefinition( "
+		query << "SELECT wci.addplaceregulargrid( "
 			  << "'" << placeName_ << "', "
 			  << xNumber_ << ", "
 			  << yNumber_ << ", "

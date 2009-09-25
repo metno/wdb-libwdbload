@@ -132,14 +132,14 @@ public:
      * @param	origProj	The original projection of the grid
      * @return the PlaceName
      */
-    void addPlaceDefinition( std::string placeName,
-							 int xNum,
-							 int yNum,
-							 float xInc,
-							 float yInc,
-							 float startX,
-							 float startY,
-							 std::string origProj );
+    std::string addPlaceDefinition( std::string placeName,
+									int xNum,
+									int yNum,
+									float xInc,
+									float yInc,
+									float startX,
+									float startY,
+									std::string origProj );
 
     /**
      * Load a Value into the Database for the designated field.

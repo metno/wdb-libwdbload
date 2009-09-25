@@ -2,7 +2,7 @@ libwdbLoad_la_SOURCES += \
 				src/LoaderConfiguration.cpp \
 				src/LoaderDatabaseConnection.cpp \
 				src/wdbSetup.cpp \
-				src/transactors/AddPlaceDefinition.h \
+				src/transactors/AddPlaceRegularGrid.h \
 				src/transactors/AddSrid.h \
 				src/transactors/GetPlaceName.h \
 				src/transactors/GetSrid.h \

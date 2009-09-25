@@ -107,14 +107,14 @@ public:
      * @return the PlaceName
      */
     virtual
-    void addPlaceDefinition( std::string placeName,
-							 int xNum,
-							 int yNum,
-							 float xInc,
-							 float yInc,
-							 float startX,
-							 float startY,
-							 std::string origProj ) = 0;
+    std::string addPlaceDefinition( std::string placeName,
+									int xNum,
+									int yNum,
+									float xInc,
+									float yInc,
+									float startX,
+									float startY,
+									std::string origProj ) = 0;
 
     /**
      * Load a Value into the Database for the designated field.
