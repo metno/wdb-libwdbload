@@ -93,12 +93,12 @@ public:
 		R = T.prepared("InfoParameterUnit")
 					  (unit_).exec();
   		if ( R.size() == 1 ) {
-  			if ( R.at(0).at(2).is_null() ) {
+  			if ( R.at(0).at(4).is_null() ) {
 				log.debugStream() << "Did not find any conversion data for " << unit_ ;
 			}
 			else {
-				R.at(0).at(2).to( *coeff_ );
-  				R.at(0).at(3).to( *term_ );
+				R.at(0).at(4).to( *coeff_ );
+  				R.at(0).at(5).to( *term_ );
 	  		}
   		}
   		if ( R.size() != 1 ) {
