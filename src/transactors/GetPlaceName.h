@@ -127,7 +127,16 @@ public:
 								  << startX_ << ", "
 								  << startY_ << ", "
 								  << '\'' << proj_ << "')";
-  				throw wdb::empty_result( "Failed to identify a placename." );
+  				std::stringstream def;
+				def << "No match for: "
+					<< xNumber_ << ", "
+				    << yNumber_ << ", "
+				    << xIncrement_ << ", "
+				    << yIncrement_ << ", "
+				    << startX_ << ", "
+				    << startY_ << ", "
+				    << '\'' << proj_;
+  				throw wdb::empty_result( "Failed to identify a placename. " + def.str() );
 			}
 			else {
 	  			R_.at(0).at(0).to( return_ );
