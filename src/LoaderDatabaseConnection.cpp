@@ -282,7 +282,7 @@ void LoaderDatabaseConnection::setup_(const std::string & wciUser)
 
 	// Statement insertSrid
 	prepare("InfoParameterUnit",
-			"SELECT * FROM wci.info ( $1, NULL::wci.infoparameterunit )" )
+			"SELECT * FROM wci.getunit(NULL) WHERE unitname=$1" )
 		   ("varchar", treat_direct );
 
 	// Statement Insert value
