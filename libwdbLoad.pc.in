@@ -6,5 +6,5 @@ includedir=@includedir@
 Name: libwdbLoad1
 Description: Basic functionality for loading data into wdb
 Version: @VERSION@
-Libs: -L${libdir} -lwdbLoad
+Libs: -L${libdir} -lwdbLoad -lwdbLog -lwdbMath
 Cflags: -I${includedir}
