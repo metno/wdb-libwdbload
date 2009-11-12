@@ -57,7 +57,7 @@ public:
      * @param	confidenceCode		WDB confidence code to be associated with the field
      */
     virtual void write(
-					const double * values,
+					const float * values,
 					unsigned int noOfValues,
 					const std::string & dataProviderName,
     				const std::string & placeName,

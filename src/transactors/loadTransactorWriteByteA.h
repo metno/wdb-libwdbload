@@ -90,7 +90,7 @@ public:
      * @param	dataVersion			The data version of the field
      * @param	confidenceCode		WDB confidence code to be associated with the field
 	 */
-	WriteByteA(const double * values,
+	WriteByteA(const float * values,
 			   int valuesSize,
 			   const std::string dataProviderName,
 			   const std::string placeName,
@@ -126,8 +126,9 @@ public:
 	 */
 	void operator()(argument_type &T)
   	{
-		const std::vector<float> data(values_, values_ + noOfValues_);
-		const char * rawData = reinterpret_cast<const char *>(& data[0]);
+		//const std::vector<float> data(values_, values_ + noOfValues_);
+		//const char * rawData = reinterpret_cast<const char *>(& data[0]);
+		const char * rawData = reinterpret_cast<const char *>(values_);
 		size_t binarySize = noOfValues_ * sizeof(float) / sizeof(char);
 		const std::string binaryData(rawData, binarySize);
 		// Write
@@ -213,7 +214,7 @@ private:
     /// Confidence Code
     int confidenceCode_;
     /// Values
-	const double * values_;
+	const float * values_;
 	/// Number of Values
 	int noOfValues_;
 	/// Result

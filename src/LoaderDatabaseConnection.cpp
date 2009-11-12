@@ -37,6 +37,7 @@
 #include "transactors/InfoParameterUnit.h"
 #include "transactors/loadTransactorWriteByteA.h"
 #include "transactors/loaderTransactorValue.h"
+#include <PlaceSpecification.h>
 #include <pqxx/pqxx>
 #include <stdexcept>
 
@@ -74,7 +75,7 @@ LoaderDatabaseConnection::~LoaderDatabaseConnection()
 }
 
 void
-LoaderDatabaseConnection::write( const double * values,
+LoaderDatabaseConnection::write( const float * values,
 								 unsigned int noOfValues,
 								 const std::string & dataProviderName,
 								 const std::string & placeName,
@@ -113,6 +114,32 @@ LoaderDatabaseConnection::write( const double * values,
 	}
 }
 
+void LoaderDatabaseConnection::write(
+				const double * values,
+				unsigned int noOfValues,
+				const std::string & dataProviderName,
+				const std::string & placeName,
+	   			const std::string & referenceTime,
+			    const std::string & validTimeFrom,
+			    const std::string & validTimeTo,
+			    const std::string & valueParameterName,
+				const std::string & levelParameterName,
+				float levelFrom,
+				float levelTo,
+	   			int dataVersion,
+			    int confidenceCode
+)
+{
+	std::vector<float> vals(values, values + noOfValues);
+	write(&vals[0], noOfValues,
+			dataProviderName, placeName,
+			referenceTime, validTimeFrom, validTimeTo,
+			valueParameterName,
+			levelParameterName, levelFrom, levelTo,
+			dataVersion, confidenceCode);
+}
+
+
 // Get PlaceId
 std::string
 LoaderDatabaseConnection::getPlaceName( int xNum,
@@ -136,6 +163,15 @@ LoaderDatabaseConnection::getPlaceName( int xNum,
 	}
 	return ret;
 }
+
+std::string LoaderDatabaseConnection::getPlaceName(const PlaceSpecification & ps)
+{
+	return getPlaceName(ps.xNumber_, ps.yNumber_,
+			ps.xIncrement_, ps.yIncrement_,
+			ps.startX_, ps.startY_,
+			ps.projDefinition_);
+}
+
 
 // Get PlaceId
 std::string
@@ -176,6 +212,16 @@ LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
 	);
 	// Finally, get the placeName again...
 	return getPlaceName( xNum, yNum, xInc, yInc, startX, startY, origProj );
+}
+
+std::string LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
+								const PlaceSpecification & ps)
+{
+	return addPlaceDefinition(placeName,
+			ps.xNumber_, ps.yNumber_,
+			ps.xIncrement_, ps.yIncrement_,
+			ps.startX_, ps.startY_,
+			ps.projDefinition_);
 }
 
 

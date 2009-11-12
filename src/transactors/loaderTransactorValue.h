@@ -123,7 +123,7 @@ public:
 	 */
 	void operator()(argument_type &T)
   	{
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.value" );
+		//WDB_LOG & log = WDB_LOG::getInstance( "wdb.loaderBase.value" );
 		const std::vector<float> data(values_, values_ + noOfValues_);
 		const char * rawData = reinterpret_cast<const char *>(& data[0]);
 		size_t binarySize = noOfValues_ * sizeof(float) / sizeof(char);

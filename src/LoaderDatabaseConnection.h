@@ -35,6 +35,10 @@
 #include <string>
 #include <limits>
 
+extern "C" {
+	struct PlaceSpecification;
+}
+
 namespace wdb
 {
 
@@ -79,6 +83,25 @@ public:
      * @param	confidenceCode		WDB confidence code to be associated with the field
      */
     virtual void write(
+					const float * values,
+					unsigned int noOfValues,
+					const std::string & dataProviderName,
+    				const std::string & placeName,
+		   			const std::string & referenceTime,
+				    const std::string & validTimeFrom,
+				    const std::string & validTimeTo,
+				    const std::string & valueParameterName,
+					const std::string & levelParameterName,
+					float levelFrom,
+					float levelTo,
+		   			int dataVersion,
+				    int confidenceCode
+    );
+
+    /**
+     * @deprecated
+     */
+    virtual void write(
 					const double * values,
 					unsigned int noOfValues,
 					const std::string & dataProviderName,
@@ -93,6 +116,7 @@ public:
 		   			int dataVersion,
 				    int confidenceCode
     );
+
 
     /**
      * Get the value to use for "undefined" entries in a grid.
@@ -119,6 +143,8 @@ public:
                               float startY,
 							  std::string origProj );
 
+    std::string getPlaceName(const PlaceSpecification & ps);
+
     /** Find the PlaceName given by a combination of attributes.
      * This function shall be overloaded for the various data types.
      * The following parameters identify a regular grid.
@@ -140,6 +166,10 @@ public:
 									float startX,
 									float startY,
 									std::string origProj );
+
+
+    std::string addPlaceDefinition( std::string placeName,
+									const PlaceSpecification & ps);
 
     /**
      * Load a Value into the Database for the designated field.
