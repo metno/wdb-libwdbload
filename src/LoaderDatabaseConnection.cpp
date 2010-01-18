@@ -55,13 +55,15 @@ namespace load
 LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & config)
 	: pqxx::connection(config.database().pqDatabaseConnection()), config_(new LoaderConfiguration(config))
 {
-	setup_(config.database().user);
+	perform ( BeginWci(config.database().user) );
+	setup_();
 }
 
-LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, const std::string & wciUser )
+LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, const std::string & wciUser, int dataprovidernamespaceid, int placenamespaceid, int parameternamespaceid)
 	: pqxx::connection( target.c_str() ), config_(0)
 {
-	setup_(wciUser);
+	perform ( BeginWci(wciUser, dataprovidernamespaceid, placenamespaceid, parameternamespaceid) );
+	setup_();
 }
 
 LoaderDatabaseConnection::~LoaderDatabaseConnection()
@@ -280,11 +282,8 @@ LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, flo
 	}
 }
 
-void LoaderDatabaseConnection::setup_(const std::string & wciUser)
+void LoaderDatabaseConnection::setup_()
 {
-	// Initialize WCI
-	perform ( BeginWci( wciUser, 0 ), 1 );
-
 	// Statement Insert value
 	prepare("WCIWriteByteA",
 			"select "

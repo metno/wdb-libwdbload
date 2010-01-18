@@ -49,6 +49,7 @@
 // SYSTEM INCLUDES
 #include <pqxx/transactor>
 #include <pqxx/result>
+#include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <string>
 
@@ -69,11 +70,16 @@ public:
 	 * Default constructor.
 	 * @param	mode 		loadmode
 	 */
-	BeginWci( const std::string & wciUser, int mode ) :
+	BeginWci( const std::string & wciUser ) :
     	pqxx::transactor<>("BeginWci"),
-    	wciUser_(wciUser), mode_(mode)
+    	wciUser_(wciUser)
     {
-    	// NOOP
+    }
+
+	BeginWci(const std::string & wciUser, int dataprovidernamespaceid, int placenamespaceid, int parameternamespaceid) :
+    	pqxx::transactor<>("BeginWci"),
+    	wciUser_(wciUser), nameSpace_(new NameSpace(dataprovidernamespaceid, placenamespaceid, parameternamespaceid))
+    {
     }
 
 	/**
@@ -83,8 +89,9 @@ public:
   	{
 		std::ostringstream query;
 		query << "SELECT wci.begin('" << wciUser_ << "'";
-		for ( int i = 0; i < 3; ++ i)
-			query << ", " << mode_;
+		if ( nameSpace_ )
+			query << ", " << nameSpace_->dataprovider << ", " << nameSpace_->place << ", " << nameSpace_->parameter;
+
 		query << ')';
 		pqxx::result R = T.exec(query.str());
 	}
@@ -122,8 +129,20 @@ public:
 private:
 	// wci user for wci.begin call
 	std::string wciUser_;
-	/// Parameter ID
-	int mode_;
+
+	struct NameSpace
+	{
+		int dataprovider;
+		int place;
+		int parameter;
+
+		NameSpace(int dataprovidernamespaceid, int placenamespaceid, int parameternamespaceid) :
+			dataprovider(dataprovidernamespaceid),
+			place(placenamespaceid),
+			parameter(parameternamespaceid)
+		{}
+	};
+	boost::shared_ptr<NameSpace> nameSpace_;
 };
 
 } // namespace load

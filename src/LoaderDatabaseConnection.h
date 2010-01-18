@@ -62,7 +62,7 @@ public:
 	explicit LoaderDatabaseConnection(const LoaderConfiguration & config);
 
 	/// @deprecated
-	LoaderDatabaseConnection(const std::string & target, const std::string & wciUser);
+	LoaderDatabaseConnection(const std::string & target, const std::string & wciUser, int dataprovidernamespaceid = 0, int placenamespaceid = 0, int parameternamespaceid = 0);
 	virtual ~LoaderDatabaseConnection();
 
 	// OPERATIONS
@@ -210,7 +210,7 @@ public:
     void readUnit( const std::string & unit, float * coeff, float * term );
 
 private:
-    void setup_(const std::string & wciUser);
+    void setup_();
 
 	std::string dataProvider_(const std::string & given) const;
 	std::string placeName_(const std::string & given) const;
