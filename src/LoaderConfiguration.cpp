@@ -64,7 +64,7 @@ getInput( LoaderConfiguration::InputOptions & out )
 {
     options_description input( "Input" );
     input.add_options()
-    ( "name", value<vector<string> >( & out.file ), "Name of file to process" )
+    ( "name", value( & out.file ), "Name of file to process" )
     ;
 
 	return input;
@@ -96,12 +96,13 @@ getLoading( LoaderConfiguration::LoadingOptions & out, const std::string & defau
     options_description loading("Loading");
     loading.add_options()
     ( "loadPlaceDefinition", bool_switch( & out.loadPlaceDefinition )->default_value( false ), "Load place definition" )
-	( "dataprovider", value<string>( & out.dataProvider ), "Override WCI Data Provider Name" )
-	( "placename", value<string>( & out.placeName ), "Attempt to override WCI Place Name" )
+	( "dataprovider", value( & out.dataProvider ), "Override WCI Data Provider Name" )
+	( "placename", value( & out.placeName ), "Attempt to override WCI Place Name" )
 	// TODO Fix magic number
 	// KLUDGE Magic number - should not be used
-	( "dataversion", value<int>( & out.dataVersion )->default_value( -999 ), "Force a specific WCI Data Version (-1 forces increment, and -999 is unset :S)" )
-	( "confidencecode", value<int>( & out.confidenceCode )->default_value( 0 ), "Set WCI Confidence Code" )
+	( "dataversion", value( & out.dataVersion )->default_value( -999 ), "Force a specific WCI Data Version (-1 forces increment, and -999 is unset :S)" )
+	( "confidencecode", value( & out.confidenceCode )->default_value( 0 ), "Set WCI Confidence Code" )
+	( "namespace", value(& out.nameSpace), "Specifiy a non-default namespace. Currently supported are 'anonymous' and 'test'")
     ;
 
     return loading;

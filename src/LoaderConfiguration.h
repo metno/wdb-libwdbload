@@ -104,6 +104,8 @@ public:
 		std::string placeName; /// < The place name.
 		int dataVersion; /// The Data Version
 		int confidenceCode; /// Confidence Code
+
+		std::string nameSpace; /// what namespace to use
 	};
 
 

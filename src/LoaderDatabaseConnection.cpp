@@ -55,7 +55,15 @@ namespace load
 LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & config)
 	: pqxx::connection(config.database().pqDatabaseConnection()), config_(new LoaderConfiguration(config))
 {
-	perform ( BeginWci(config.database().user) );
+	if ( config.loading().nameSpace.empty() )
+		perform ( BeginWci(config.database().user) );
+	else if (config.loading().nameSpace == "test" )
+		perform ( BeginWci(config.database().user, 0, 999, 0) ); // TODO: update this once more name spaces are made
+	else if (config.loading().nameSpace == "anonymous" )
+		perform ( BeginWci(config.database().user, 0, 0, 0) );
+	else
+		throw std::logic_error("Unknown name space specification: " + config.loading().nameSpace );
+
 	setup_();
 }
 
