@@ -1,3 +1,15 @@
+libwdbload1 (0.9.6-4) hardy; urgency=low
+
+  * final build
+
+ -- Vegard B�nes <vegardb@met.no>  Fri, 05 Feb 2010 14:50:02 +0000
+
+libwdbload1 (0.9.6-1) hardy; urgency=low
+
+  * new release
+
+ -- Vegard B�nes <vegardb@met.no>  Thu, 07 Jan 2010 08:14:37 +0000
+
 libwdbload1 (0.9.5-1) hardy; urgency=low
 
   * new release
