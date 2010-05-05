@@ -85,7 +85,7 @@ public:
 	void operator()(argument_type &T)
   	{
 		std::ostringstream query;
-		query << "SELECT wci.getsridfromproj('" << proj_ << "')";
+		query << "SELECT * from wci.getsrid('" << proj_ << "')";
 		R_ = T.exec( query.str() );
 	}
 

@@ -139,7 +139,7 @@ public:
   				throw wdb::empty_result( "Failed to identify a placename. " + def.str() );
 			}
 			else {
-	  			R_.at(0).at(0).to( return_ );
+	  			R_.at(0).at(2).to( return_ );
 	  		}
   		}
   		else {
