@@ -5,12 +5,12 @@ Maintainer: Vegard B�nes <wdb@met.no>
 Build-Depends: debhelper (>= 5), autoconf,
  automake (>=1.9), wdb|wdb-psql-8.3
 Build-Conflicts: autoconf2.13, automake1.4
-Standards-Version: 3.7.2
+Standards-Version: 3.7.3
 
 Package: libwdbload1-dev
 Section: libdevel
 Architecture: any
-Depends: libwdbload1 (= ${Source-Version})
+Depends: libwdbload1 (= ${source:Version})
 Description: Base libarary for loading data into wdb
  Provides basic functionality for loading data into the wdb database
 
