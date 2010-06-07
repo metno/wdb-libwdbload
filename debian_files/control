@@ -1,7 +1,7 @@
 Source: libwdbload1
 Section: science
 Priority: extra
-Maintainer: Vegard Bønes <wdb@met.no>
+Maintainer: Vegard Bï¿½nes <wdb@met.no>
 Build-Depends: debhelper (>= 5), autoconf,
  automake (>=1.9), wdb|wdb-psql-8.3
 Build-Conflicts: autoconf2.13, automake1.4
