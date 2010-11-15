@@ -58,8 +58,8 @@ LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & c
 	if ( config.loading().nameSpace.empty() )
 		perform ( BeginWci(config.database().user) );
 	else if (config.loading().nameSpace == "test" )
-		perform ( BeginWci(config.database().user, 0, 999, 0) ); // TODO: update this once more name spaces are made
-	else if (config.loading().nameSpace == "anonymous" )
+		perform ( BeginWci(config.database().user, 999, 999, 999) );
+	else if (config.loading().nameSpace == "default" )
 		perform ( BeginWci(config.database().user, 0, 0, 0) );
 	else
 		throw std::logic_error("Unknown name space specification: " + config.loading().nameSpace );

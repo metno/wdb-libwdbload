@@ -128,7 +128,16 @@ public:
   	void on_abort(const char Reason[]) throw ()
   	{
 		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.addplacedefinition" );
-		log.errorStream() << "Transaction " << Name() << " failed. " << Reason;
+		log.errorStream() << "Transaction " << Name() << " failed with the query: "
+						  << "SELECT wci.addplaceregulargrid( "
+						  << "'" << placeName_ << "', "
+						  << xNumber_ << ", "
+						  << yNumber_ << ", "
+						  << xIncrement_ << ", "
+						  << yIncrement_ << ", "
+						  << startX_ << ", "
+						  << startY_ << ", "
+						  << "'" << proj_ << "'). "<< Reason;
   	}
 
 	/**

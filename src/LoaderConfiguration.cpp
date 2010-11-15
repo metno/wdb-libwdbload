@@ -102,7 +102,7 @@ getLoading( LoaderConfiguration::LoadingOptions & out, const std::string & defau
 	// KLUDGE Magic number - should not be used
 	( "dataversion", value( & out.dataVersion )->default_value( -999 ), "Force a specific WCI Data Version (-1 forces increment, and -999 is unset :S)" )
 	( "confidencecode", value( & out.confidenceCode )->default_value( 0 ), "Set WCI Confidence Code" )
-	( "namespace", value(& out.nameSpace), "Specifiy a non-default namespace. Currently supported are 'anonymous' and 'test'")
+	( "namespace", value(& out.nameSpace), "Specify a non-default namespace. Currently supported are 'default' and 'test'")
     ;
 
     return loading;
