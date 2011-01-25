@@ -12,7 +12,7 @@ AC_INIT(libwdbLoad, 0.9.8, [wdb@met.no])
 # Config
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
-
+AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_LIBTOOL
 
 #-----------------------------------------------------------------------------
@@ -42,6 +42,7 @@ AC_HEADER_STDC
 AC_CHECK_HEADERS([stdio.h stdlib.h sys/time.h unistd.h wordexp.h ctype.h])
 AC_CHECK_HEADERS([string vector iterator iosfwd iostream sstream fstream])
 AC_CHECK_HEADERS([cmath algorithm memory new stdexcept cstdlib exception])
+
 
 # string exception sstream 
 
