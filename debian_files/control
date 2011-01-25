@@ -10,7 +10,7 @@ Standards-Version: 3.9.1
 Package: libwdbload1-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, libwdbload1 (= ${source:Version})
+Depends: ${misc:Depends}, libwdbload1 (= ${binary:Version})
 Description: Base (developer) library for loading data into wdb
  Provides basic functionality for loading data into the wdb database. Includes developer files (headers)
 
