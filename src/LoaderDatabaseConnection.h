@@ -214,6 +214,9 @@ private:
 
 	std::string dataProvider_(const std::string & given) const;
 	std::string placeName_(const std::string & given) const;
+	std::string referenceTime_(const std::string & given) const;
+	std::string valueParameter_(const std::string & given) const;
+	std::string levelParameter_(const std::string & given) const;
 	int dataVersion_(int given) const;
 	int confidenceCode_(int given) const;
 

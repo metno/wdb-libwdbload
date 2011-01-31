@@ -105,11 +105,11 @@ LoaderDatabaseConnection::write( const float * values,
 						noOfValues,
 						dataProvider_(dataProviderName),
 						placeName_(placeName),
-						referenceTime,
+						referenceTime_(referenceTime),
 						validTimeFrom,
 						validTimeTo,
-						valueParameterName,
-						levelParameterName,
+						valueParameter_(valueParameterName),
+						levelParameter_(levelParameterName),
 						levelFrom,
 						levelTo,
 						dataVersion_(dataVersion),
@@ -393,6 +393,27 @@ std::string LoaderDatabaseConnection::placeName_(const std::string & given) cons
 {
 	if ( config_ and not config_->loading().placeName.empty() )
 		return config_->loading().placeName;
+	return given;
+}
+
+std::string LoaderDatabaseConnection::referenceTime_(const std::string & given) const
+{
+	if ( config_ and not config_->loading().referenceTime.empty() )
+		return config_->loading().referenceTime;
+	return given;
+}
+
+std::string LoaderDatabaseConnection::valueParameter_(const std::string & given) const
+{
+	if ( config_ and not config_->loading().valueParameter.empty() )
+		return config_->loading().valueParameter;
+	return given;
+}
+
+std::string LoaderDatabaseConnection::levelParameter_(const std::string & given) const
+{
+	if ( config_ and not config_->loading().levelParameter.empty() )
+		return config_->loading().levelParameter;
 	return given;
 }
 
