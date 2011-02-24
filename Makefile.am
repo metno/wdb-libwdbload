@@ -43,3 +43,4 @@ include src/libwdbLoad.mk
 
 include mk/debian.mk
 
+debian: common-debian
