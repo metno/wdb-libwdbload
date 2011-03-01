@@ -41,6 +41,10 @@ EXTRA_DIST =
 
 include src/libwdbLoad.mk
 
-include mk/debian.mk
+#-----------------------------------------------------------------------------
+# Debian Makefile
+#-----------------------------------------------------------------------------
 
+include mk/debian.mk
+	
 debian: common-debian
