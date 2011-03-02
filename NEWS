@@ -1,4 +1,10 @@
-libwdbload1 (1.0.0~rc1-1) hardy; urgency=low
+libwdbload1 (1.0.0~rc2-1) lucid; urgency=low
+
+  * Minor debian build tweaks.
+
+ -- Michael Akinde <michaeloa@pc3027.pc.met.no>  Wed, 02 Mar 2011 12:00:00 +0000
+
+libwdbload1 (1.0.0~rc1-1) luciddy; urgency=low
 
   * Updated debian build to match with the changes introduced in wdb.
 
