@@ -60,9 +60,6 @@ class LoaderDatabaseConnection : public pqxx::connection, public LoaderDatabaseI
 {
 public:
 	explicit LoaderDatabaseConnection(const LoaderConfiguration & config);
-
-	/// @deprecated
-	LoaderDatabaseConnection(const std::string & target, const std::string & wciUser, int dataprovidernamespaceid = 0, int placenamespaceid = 0, int parameternamespaceid = 0);
 	virtual ~LoaderDatabaseConnection();
 
 	// OPERATIONS

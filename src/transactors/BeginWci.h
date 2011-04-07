@@ -94,6 +94,8 @@ public:
 
 		query << ')';
 		pqxx::result R = T.exec(query.str());
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.beginwci" );
+		log.infoStream() << query.str();
 	}
 
 	/**

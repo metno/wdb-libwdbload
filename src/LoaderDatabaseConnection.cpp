@@ -67,13 +67,6 @@ LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & c
 	setup_();
 }
 
-LoaderDatabaseConnection::LoaderDatabaseConnection( const std::string & target, const std::string & wciUser, int dataprovidernamespaceid, int placenamespaceid, int parameternamespaceid)
-	: pqxx::connection( target.c_str() ), config_(0)
-{
-	perform ( BeginWci(wciUser, dataprovidernamespaceid, placenamespaceid, parameternamespaceid) );
-	setup_();
-}
-
 LoaderDatabaseConnection::~LoaderDatabaseConnection()
 {
     unprepare("WCIWriteByteA");
