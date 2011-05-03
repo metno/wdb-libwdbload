@@ -96,20 +96,12 @@ public:
   	{
 		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.getsrid" );
   		if ( R_.size() == 1 ) {
-  			// A row is returned
-			if ( R_.at(0).at(0).is_null() ) {
-				// NULL returned means we did not manage to identify the SRID
-				log.debugStream() << "Failed to identify the SRID of the PROJ.4 string " << proj_;
-				throw wdb::empty_result( "Could not identify the SRID" );
-			}
-			else {
-				R_.at(0).at(0).to( return_ );
-	 			log.debugStream() << "Identified the SRID as: " << return_;
-			}
+			R_.at(0).at(0).to( return_ );
+ 			log.debugStream() << "Identified the SRID as: " << return_;
   		}
-  		if ( R_.size() != 1 ) {
-  			// Technically, it should be impossible for this to happen
-  	        throw std::logic_error( "Transactor GetSrid did not return any rows. This should not be possible" );
+  		else {
+			log.debugStream() << "Failed to identify the SRID of the PROJ.4 string " << proj_;
+			throw wdb::empty_result( "Could not identify the SRID" );
   		}
   	}
 

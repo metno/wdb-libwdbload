@@ -1,20 +1,17 @@
+libwdbload1 (1.0.1-1) lucid; urgency=low
+
+  * Fixed GetSrid transactor to work correctly with the updated
+    wci.getSrid functionality.
+
+ -- Michael Akinde <wdb@met.no>  Fri, 15 Apr 2011 12:00:00 +0000
+
 libwdbload1 (1.0.0-1) lucid; urgency=high
 
   * Release version of WDB 1.0.0
 
- -- Michael Akinde <wdb@met.no>  Wed, 09 Mar 2011 12:00:00 +0000
-
-libwdbload1 (1.0.0~rc2-1) lucid; urgency=low
-
-  * Minor debian build tweaks.
-
- -- Michael Akinde <michaeloa@pc3027.pc.met.no>  Wed, 02 Mar 2011 12:00:00 +0000
-
-libwdbload1 (1.0.0~rc1-1) luciddy; urgency=low
-
   * Updated debian build to match with the changes introduced in wdb.
 
- -- Michael Akinde <michaeloa@pc3027.pc.met.no>  Tue, 25 Jan 2011 12:00:00 +0000
+ -- Michael Akinde <wdb@met.no>  Wed, 09 Mar 2011 12:00:00 +0000
 
 libwdbload1 (0.9.7-1) hardy; urgency=low
 
