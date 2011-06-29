@@ -12,7 +12,7 @@ AC_INIT(libwdbLoad, 1.0.1, [wdb@met.no])
 # Config
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_MACRO_DIR([../wdb-config/m4])
 AC_PROG_LIBTOOL
 
 #-----------------------------------------------------------------------------

@@ -11,3 +11,5 @@
 /configure
 /install-sh
 /aclocal.m4
+/.cproject
+/.project
