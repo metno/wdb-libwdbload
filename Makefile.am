@@ -7,7 +7,7 @@
 
 
 # Scanned by Autoreconf; must be static (no expansion)
-ACLOCAL_AMFLAGS = 		-I ../wdb-config/m4
+ACLOCAL_AMFLAGS = 		-I config/m4
 
 # Share directory organization
 pkgincludedir = $(includedir)/wdb
@@ -45,6 +45,6 @@ include src/libwdbLoad.mk
 # Debian Makefile
 #-----------------------------------------------------------------------------
 
-include ../wdb-config/mk/debian.mk
+include config/mk/debian.mk
 	
 debian: common-debian

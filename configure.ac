@@ -12,7 +12,7 @@ AC_INIT(libwdbLoad, 1.0.1, [wdb@met.no])
 # Config
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
-AC_CONFIG_MACRO_DIR([../wdb-config/m4])
+AC_CONFIG_MACRO_DIR([config/m4])
 AC_PROG_LIBTOOL
 
 #-----------------------------------------------------------------------------
@@ -79,7 +79,8 @@ WDB_PQXX_CHECK(2.6.8)
 # documentation
 #-----------------------------------------------------------------------------
 
-WDB_DOCBOOK_CHECK
+# No docbook documentation
+# WDB_DOCBOOK_CHECK
 
 #-----------------------------------------------------------------------------
 # Automake
