@@ -48,16 +48,27 @@
 
 // SYSTEM INCLUDES
 
+
 #include "libpq-fe.h"
 
+#include <wdb/data_transfer/convert_to_network_order.h>
 #include <pqxx/transactor>
 #include <pqxx/result>
 #include <pqxx/largeobject>
+#include <boost/scoped_array.hpp>
 #include <iostream>
 #include <sstream>
 #include <fstream>
 #include <string>
 #include <vector>
+
+
+#define EXPECT_NETWORK_ORDER_BYTES
+
+extern "C"
+{
+#include <arpa/inet.h>
+}
 
 // FORWARD REFERENCES
 //
@@ -128,7 +139,15 @@ public:
   	{
 		//const std::vector<float> data(values_, values_ + noOfValues_);
 		//const char * rawData = reinterpret_cast<const char *>(& data[0]);
+
+#ifdef EXPECT_NETWORK_ORDER_BYTES
+		boost::scoped_array<float> sendableValues(new float[noOfValues_]);
+		std::transform(values_, values_ + noOfValues_, sendableValues.get(), convert_to_network_order());
+		const char * rawData = reinterpret_cast<const char *>(sendableValues.get());
+#else
 		const char * rawData = reinterpret_cast<const char *>(values_);
+#endif
+
 		size_t binarySize = noOfValues_ * sizeof(float) / sizeof(char);
 		const std::string binaryData(rawData, binarySize);
 		// Write
