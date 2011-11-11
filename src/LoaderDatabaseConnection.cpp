@@ -92,7 +92,6 @@ LoaderDatabaseConnection::write( const float * values,
 								 int dataVersion,
 								 int confidenceCode )
 {
-    try {
 		perform(
 			WriteByteA( values,
 						noOfValues,
@@ -109,12 +108,6 @@ LoaderDatabaseConnection::write( const float * values,
 						confidenceCode_(confidenceCode) ),
 			1
 		);
-	}
-	catch (const exception &e)
-	{
-		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw;
-	}
 }
 
 void LoaderDatabaseConnection::write(

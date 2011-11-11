@@ -98,9 +98,9 @@ getLoading( LoaderConfiguration::LoadingOptions & out, const std::string & defau
     ( "loadPlaceDefinition", bool_switch( & out.loadPlaceDefinition )->default_value( false ), "Load place definition" )
 	( "dataprovider", value( & out.dataProvider ), "Override WCI Data Provider Name decoded from file" )
 	( "placename", value( & out.placeName ), "Override WCI Place Name decoded from file" )
-	( "referencetime", value( & out.placeName ), "Override reference time decoded from file" )
-	( "valueparameter", value( & out.placeName ), "Override value parameter decoded from file" )
-	( "levelparameter", value( & out.placeName ), "Override level parameter decoded from file" )
+	( "referencetime", value( & out.referenceTime ), "Override reference time decoded from file" )
+	( "valueparameter", value( & out.valueParameter ), "Override value parameter decoded from file" )
+	( "levelparameter", value( & out.levelParameter ), "Override level parameter decoded from file" )
 	// TODO Fix magic number
 	// KLUDGE Magic number - should not be used
 	( "dataversion", value( & out.dataVersion )->default_value( -999 ), "Force a specific WCI Data Version (-1 forces increment, and -999 is unset :S)" )
