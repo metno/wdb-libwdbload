@@ -1,4 +1,4 @@
-Source: libwdbload1
+Source: libwdbload2
 Section: science
 Priority: extra
 Maintainer: Vegard Bønes <wdb@met.no>
@@ -10,7 +10,7 @@ Build-Conflicts: autoconf2.13,
  automake1.4
 Standards-Version: 3.9.1
 
-Package: libwdbload1-dev
+Package: libwdbload2-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
@@ -18,7 +18,7 @@ Depends: ${misc:Depends},
 Description: Base (developer) library for loading data into wdb
  Provides basic functionality for loading data into the wdb database. Includes developer files (headers)
 
-Package: libwdbload1
+Package: libwdbload2
 Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends},
