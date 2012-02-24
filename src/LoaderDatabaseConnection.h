@@ -96,26 +96,6 @@ public:
     );
 
     /**
-     * @deprecated
-     */
-    virtual void write(
-					const double * values,
-					unsigned int noOfValues,
-					const std::string & dataProviderName,
-    				const std::string & placeName,
-		   			const std::string & referenceTime,
-				    const std::string & validTimeFrom,
-				    const std::string & validTimeTo,
-				    const std::string & valueParameterName,
-					const std::string & levelParameterName,
-					float levelFrom,
-					float levelTo,
-		   			int dataVersion,
-				    int confidenceCode
-    );
-
-
-    /**
      * Get the value to use for "undefined" entries in a grid.
      */
     double getUndefinedValue() const { return std::numeric_limits<double>::quiet_NaN(); }

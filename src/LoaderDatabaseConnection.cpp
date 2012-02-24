@@ -110,32 +110,6 @@ LoaderDatabaseConnection::write( const float * values,
 		);
 }
 
-void LoaderDatabaseConnection::write(
-				const double * values,
-				unsigned int noOfValues,
-				const std::string & dataProviderName,
-				const std::string & placeName,
-	   			const std::string & referenceTime,
-			    const std::string & validTimeFrom,
-			    const std::string & validTimeTo,
-			    const std::string & valueParameterName,
-				const std::string & levelParameterName,
-				float levelFrom,
-				float levelTo,
-	   			int dataVersion,
-			    int confidenceCode
-)
-{
-	std::vector<float> vals(values, values + noOfValues);
-	write(&vals[0], noOfValues,
-			dataProviderName, placeName,
-			referenceTime, validTimeFrom, validTimeTo,
-			valueParameterName,
-			levelParameterName, levelFrom, levelTo,
-			dataVersion, confidenceCode);
-}
-
-
 // Get PlaceId
 std::string
 LoaderDatabaseConnection::getPlaceName( int xNum,
