@@ -31,6 +31,7 @@
 
 #include "LoaderDatabaseInterface.h"
 #include "WdbLevel.h"
+#include "FloatDataEntry.h"
 #include <pqxx/connection>
 #include <string>
 #include <limits>
@@ -41,7 +42,6 @@ extern "C" {
 
 namespace wdb
 {
-
 namespace load
 {
 class LoaderConfiguration;
@@ -94,6 +94,8 @@ public:
 		   			int dataVersion,
 				    int confidenceCode
     );
+
+    virtual void write(const std::vector<FloatDataEntry> & points);
 
     /**
      * Get the value to use for "undefined" entries in a grid.

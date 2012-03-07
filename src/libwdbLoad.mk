@@ -10,11 +10,13 @@ libwdbLoad_la_SOURCES += \
 				src/transactors/EndWci.h \
 				src/transactors/loadTransactorWriteByteA.h \
 				src/transactors/loaderTransactorValue.h \
-				src/transactors/InfoParameterUnit.h
+				src/transactors/InfoParameterUnit.h \
+				src/FloatDataEntry.cpp
 	
 pkginclude_HEADERS += \
 				src/LoaderDatabaseInterface.h \
 				src/LoaderConfiguration.h \
 				src/LoaderDatabaseConnection.h \
 				src/wdbSetup.h \
-				src/WdbLevel.h
+				src/WdbLevel.h \
+				src/FloatDataEntry.h
