@@ -37,12 +37,9 @@
 #include "transactors/InfoParameterUnit.h"
 #include "transactors/loadTransactorWriteByteA.h"
 #include "transactors/loaderTransactorValue.h"
+#include "loadthread/WriteThread.h"
 #include <PlaceSpecification.h>
-#include <pqxx/pqxx>
-#include <libpq-fe.h>
-#include <boost/thread.hpp>
 #include <boost/foreach.hpp>
-#include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>
 #include <stdexcept>
 #include <deque>
@@ -97,7 +94,9 @@ struct NamespaceSpec
 }
 
 LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & config)
-	: pqxx::connection(config.database().pqDatabaseConnection()), config_(new LoaderConfiguration(config))
+	: pqxx::connection(config.database().pqDatabaseConnection()),
+	  config_(new LoaderConfiguration(config)),
+	  writeThread_(0)
 {
 	if ( config.loading().nameSpace.empty() )
 		perform ( BeginWci(config.database().user) );
@@ -118,6 +117,7 @@ LoaderDatabaseConnection::~LoaderDatabaseConnection()
     perform ( EndWci( ), 1 );
 
     delete config_;
+    delete writeThread_;
 }
 
 void
@@ -153,199 +153,12 @@ LoaderDatabaseConnection::write( const float * values,
 		);
 }
 
-namespace
-{
-class MessageQue
-{
-public:
-	MessageQue() :
-		done_(false)
-	{}
-
-	void put(const std::string & msg)
-	{
-		boost::unique_lock<boost::mutex> l(mutex_);
-		messages_.push_back(msg);
-		condition_.notify_one();
-	}
-
-	std::string get()
-	{
-		boost::unique_lock<boost::mutex> l(mutex_);
-		if ( messages_.empty() )
-		{
-			if ( done_ )
-				return std::string();
-			condition_.wait(l);
-		}
-		std::string ret = messages_.front();
-		messages_.pop_front();
-		return ret;
-	}
-	void done()
-	{
-		done_ = true;
-		condition_.notify_all();
-	}
-	bool isDone() const
-	{
-		if ( done_ )
-		{
-			boost::unique_lock<boost::mutex> l(mutex_);
-			return messages_.empty();
-		}
-		return false;
-	}
-
-private:
-	std::deque<std::string> messages_;
-	mutable boost::mutex mutex_;
-	mutable boost::condition_variable condition_;
-	bool done_;
-};
-
-class CopyData
-{
-public:
-	CopyData(const std::string & databaseConnect, MessageQue & que) :
-		databaseConnect_(databaseConnect), que_(que)
-	{}
-
-	void operator () ()
-	{
-		// pqxx does no support copy, so we have to create our own connection...
-
-		PGconn * connection_ = PQconnectdb(databaseConnect_.c_str());
-		if ( ! connection_ )
-			throw std::runtime_error("Unable to connect to database");
-		boost::shared_ptr<PGconn> connection(connection_, PQfinish);
-
-		if ( PQstatus(connection.get()) != CONNECTION_OK )
-			throw std::runtime_error("Error when connecting to database");
-
-		PGresult * result = PQexec(connection.get(), "COPY wdb_int.floatvalue FROM STDIN");
-		if ( PQresultStatus(result) != PGRES_COPY_IN )
-			throw std::runtime_error("Error when performing query");
-
-		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.copydata" );
-
-		for ( std::string msg = que_.get(); not msg.empty(); msg = que_.get() )
-		{
-			int result = 0;
-			while ( ! result )
-				result = PQputCopyData(connection.get(), msg.c_str(), msg.size());
-			if ( result == -1 )
-				throw std::runtime_error(PQerrorMessage(connection.get()));
-		}
-		int copyResult = 0;
-		while ( ! copyResult )
-			copyResult = PQputCopyEnd(connection.get(), NULL);
-		if ( copyResult < 0 )
-			throw std::runtime_error(PQerrorMessage(connection.get()));
-		log.debug("copy done");
-	}
-
-private:
-	const std::string databaseConnect_;
-	MessageQue & que_;
-};
-
-class ToCopyStatementConverter
-{
-public:
-
-	explicit ToCopyStatementConverter(pqxx::work & transaction) :
-		transaction_(transaction), counter_(0)
-	{}
-
-	std::string get(const FloatDataEntry & fda)
-	{
-		std::ostringstream s;
-		s << counter_ ++ <<'\t'<<
-				1<<'\t'<<
-				dataproviderid(fda.dataProviderName())<<'\t'<<
-				placeid(fda.placeName())<<'\t'<<
-				fda.referenceTime() <<'\t'<<
-				fda.validTimeFrom() <<'\t'<<
-				fda.validTimeTo() <<'\t'<<
-				0 <<'\t'<<
-				paramid(fda.valueParameterName()) <<'\t'<<
-				paramid(fda.levelParameterName()) <<'\t'<<
-				fda.levelFrom() <<'\t'<<
-				fda.levelTo() <<'\t'<<
-				0 <<'\t'<<
-				0 <<'\t'<<
-				0 <<'\t'<<
-				0 <<'\t'<<
-				fda.value() <<'\t'<<
-				"2012-02-23 10:22:12.863787+01\n";
-		return s.str();
-	}
-
-long long dataproviderid(const std::string & dataproviderName)
-{
-	long long & dataProviderid = dataproviders_[dataproviderName];
-	if ( ! dataProviderid )
-	{
-		pqxx::result r = transaction_.exec("SELECT dataproviderid FROM wci.getdataprovider('" + transaction_.esc(dataproviderName) + "')");
-		if ( r.empty() )
-			throw std::runtime_error(dataproviderName + ": No such dataprovider");
-
-		dataProviderid = r[0][0].as<long long>();
-	}
-	return dataProviderid;
-}
-long long placeid(const std::string & placeName)
-{
-	long long & placeid = places_[placeName];
-	if ( ! placeid )
-	{
-		pqxx::result r = transaction_.exec("SELECT placeid FROM wci.getplacedefinition('" + transaction_.esc(placeName) + "')");
-		if ( r.empty() )
-			throw std::runtime_error(placeName + ": No such placename");
-		placeid = r[0][0].as<long long>();
-	}
-	return placeid;
-}
-int paramid(const std::string & placeName)
-{
-	int & paramid = parameters_[placeName];
-	if ( ! paramid )
-	{
-		pqxx::result r = transaction_.exec("SELECT parameterid FROM wci.getparameter('" + transaction_.esc(placeName) + "')");
-		if ( r.empty() )
-			throw std::runtime_error(placeName + ": No such parameter");
-		paramid = r[0][0].as<int>();
-	}
-	return paramid;
-}
-
-
-private:
-	std::map<std::string, long long> dataproviders_;
-	std::map<std::string, long long> places_;
-	std::map<std::string, int> parameters_;
-
-	pqxx::work & transaction_;
-	long long counter_;
-};
-
-}
-
 void LoaderDatabaseConnection::write(const std::vector<FloatDataEntry> & points)
 {
-	MessageQue que;
-	CopyData copyData(config_->database().pqDatabaseConnection(), que);
-
-	boost::thread t(copyData);
-
+	if ( ! writeThread_ )
+		writeThread_ = new internal::WriteThread(* config_);
 	pqxx::work transaction(* this);
-	ToCopyStatementConverter converter(transaction);
-	BOOST_FOREACH(const FloatDataEntry & entry, points)
-		que.put(converter.get(entry));
-	que.done();
-
-	t.join();
+	writeThread_->process(transaction, points);
 }
 
 // Get PlaceId

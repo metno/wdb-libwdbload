@@ -44,6 +44,10 @@ namespace wdb
 {
 namespace load
 {
+namespace internal
+{
+class WriteThread;
+}
 class LoaderConfiguration;
 
 
@@ -201,6 +205,7 @@ private:
 
 
     const LoaderConfiguration * config_;
+    internal::WriteThread * writeThread_;
 };
 
 }

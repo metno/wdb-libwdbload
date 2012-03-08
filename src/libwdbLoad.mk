@@ -11,7 +11,16 @@ libwdbLoad_la_SOURCES += \
 				src/transactors/loadTransactorWriteByteA.h \
 				src/transactors/loaderTransactorValue.h \
 				src/transactors/InfoParameterUnit.h \
-				src/FloatDataEntry.cpp
+				src/FloatDataEntry.cpp \
+				src/loadthread/MessageQue.h \
+				src/loadthread/MessageQue.cpp \
+				src/loadthread/CopyData.h \
+				src/loadthread/CopyData.cpp \
+				src/loadthread/CopyStatementConverter.h \
+				src/loadthread/CopyStatementConverter.cpp \
+				src/loadthread/WriteThread.h \
+				src/loadthread/WriteThread.cpp
+	
 	
 pkginclude_HEADERS += \
 				src/LoaderDatabaseInterface.h \
