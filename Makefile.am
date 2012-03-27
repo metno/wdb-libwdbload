@@ -14,7 +14,7 @@ pkgincludedir = $(includedir)/wdb
 pkgconfigdir = $(libdir)/pkgconfig
 
 # This is to be replaced by a "find wdb" macro:
-AM_CXXFLAGS = -I@top_srcdir@/src/
+AM_CXXFLAGS = -DSYSCONFDIR=\"$(pkgsysconfdir)\" -I@top_srcdir@/src/ $(wdb_CFLAGS) 
 AM_LDFLAGS = 
 
 # Setting Targets

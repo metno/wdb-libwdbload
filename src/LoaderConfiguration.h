@@ -49,6 +49,7 @@
 // SYSTEM INCLUDES
 #include <string>
 #include <boost/program_options/positional_options.hpp>
+#include <boost/filesystem.hpp>
 
 // FORWARD REFERENCES
 //
@@ -109,6 +110,12 @@ public:
 
 		std::string nameSpace; /// what namespace to use
 	};
+	/** Container for metadata options
+	 */
+	struct MetadataOptions
+	{
+		std::string path;
+	};
 
 
 	/**	Get the input options
@@ -122,6 +129,9 @@ public:
 	/** Get the general loading options
 	 */
 	const LoadingOptions & loading() const { return loading_; }
+	/** Get the metadata options
+	 */
+	const MetadataOptions & metadata() const { return metadata_; }
 	/** Get the positional options of the loader
 	 * Used for returning the file name
 	 * @return 	The positional options
@@ -147,6 +157,8 @@ protected:
 	OutputOptions output_;
 	/// loading options
 	LoadingOptions loading_;
+	/// metadata options
+	MetadataOptions metadata_;
 
 	const std::string defaultDataProvider_;
 };

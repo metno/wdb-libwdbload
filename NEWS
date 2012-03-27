@@ -1,3 +1,10 @@
+libwdbload1 (1.0.3-1) lucid; urgency=low
+
+  * Added metadata option for specifying location of metadata
+    configuration files.
+
+ -- Michael Akinde <wdb@met.no>  Mon, 26 Mar 2012 14:00:00 +0000
+
 libwdbload1 (1.0.2-1) lucid; urgency=low
 
   * Fixed a number of command-line options that were not functioning

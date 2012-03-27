@@ -49,6 +49,7 @@
 
 using namespace std;
 using namespace boost::program_options;
+using namespace boost::filesystem;
 using namespace wdb::load;
 
 // Support Functions
@@ -111,6 +112,22 @@ getLoading( LoaderConfiguration::LoadingOptions & out, const std::string & defau
     return loading;
 }
 
+/**
+ * Define the metadata options for the Loader
+ * @param	out		Reference to option structure
+ */
+options_description
+getMetadata( LoaderConfiguration::MetadataOptions & out )
+{
+	options_description meta( "Metadata" );
+    meta.add_options()
+	( "metadata", value( & out.path ), "Path to the metadata configuration. If not specified, the loading program will use the default configuration location" )
+    ;
+
+	return meta;
+}
+
+
 } // namespace support functions
 
 
@@ -120,9 +137,11 @@ LoaderConfiguration::LoaderConfiguration(const std::string & defaultDataProvider
 	cmdOptions().add( getInput( input_ ) );
 	cmdOptions().add( getOutput( output_ ) );
 	configOptions().add( getLoading( loading_, defaultDataProvider_ ) );
+	configOptions().add( getMetadata( metadata_ ) );
 
 	shownOptions().add( getOutput( output_ ) );
 	shownOptions().add( getLoading( loading_, defaultDataProvider_  ) );
+	shownOptions().add( getMetadata( metadata_ ) );
 
 	positionalOptions().add( "name", -1 );
 }
