@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: libwdbLoad1
+Name: libwdbLoad2
 Description: Basic functionality for loading data into wdb
 Version: @VERSION@
 Libs: -L${libdir} -lwdbLoad -lwdbLog -lwdbMath
