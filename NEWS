@@ -1,4 +1,4 @@
-libwdbload1 (1.0.3-1) lucid; urgency=low
+libwdbload1 (2.0.0~rc1-1) lucid; urgency=low
 
   * Added metadata option for specifying location of metadata
     configuration files.
