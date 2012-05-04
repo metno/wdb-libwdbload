@@ -6,10 +6,11 @@ Uploaders: Michael O. Akinde <michael.akinde@met.no>
 Build-Depends: debhelper (>= 5),
  autoconf,
  automake (>=1.9),
+ cdbs,
  wdb
 Build-Conflicts: autoconf2.13,
  automake1.4
-Standards-Version: 3.9.1
+Standards-Version: 3.9.3
 
 Package: libwdbload2-dev
 Section: libdevel
