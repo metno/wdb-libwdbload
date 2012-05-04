@@ -1,5 +1,5 @@
-usr/include/*
-usr/lib/lib*.a
-usr/lib/libwdbLoad.so
-usr/lib/libwdbLoad.la
-usr/lib/pkgconfig/*
+debian/tmp/usr/include/* usr/include
+debian/tmp/usr/lib/lib*.a usr/lib/
+debian/tmp/usr/lib/libwdbLoad.so usr/lib/
+debian/tmp/usr/lib/libwdbLoad.la usr/lib/
+debian/tmp/usr/lib/pkgconfig/* usr/lib/pkgconfig
