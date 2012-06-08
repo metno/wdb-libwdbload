@@ -16,16 +16,17 @@ Package: libwdbload2-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
- libwdbload2 (= ${binary:Version})
+ libwdbload2 (= ${binary:Version}),
+ wdb
 Replaces: libwdbload1-dev
 Description: Base (developer) library for loading data into wdb
- Provides basic functionality for loading data into the wdb database. Includes developer files (headers)
+ Provides basic functionality for loading data into the wdb database.
 
 Package: libwdbload2
 Architecture: any
 Depends: ${shlibs:Depends},
- ${misc:Depends},
- wdb
+ ${misc:Depends}
 Replaces: libwdbload1
+Suggests: wdb
 Description: Base library for loading data into wdb
  Provides basic functionality for loading data into the wdb database
