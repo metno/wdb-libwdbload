@@ -6,5 +6,6 @@ includedir=@includedir@
 Name: libwdbLoad2
 Description: Basic functionality for loading data into wdb
 Version: @VERSION@
-Libs: -L${libdir} -lwdbLoad -lwdbLog -lwdbMath
+Requires: log4cpp libpqxx
+Libs: -L${libdir} -lwdbLoad -lwdbLog -lwdbMath -lboost_program_options -lboost_filesystem -lboost_system
 Cflags: -I${includedir}
