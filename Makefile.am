@@ -40,6 +40,7 @@ CLEANFILES =
 EXTRA_DIST =
 
 include src/libwdbLoad.mk
+include test/libwdbLoad.mk
 
 #-----------------------------------------------------------------------------
 # Debian Makefile

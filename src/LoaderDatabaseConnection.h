@@ -206,6 +206,11 @@ public:
      */
     void readUnit( const std::string & unit, float * coeff, float * term );
 
+    /**
+     * Get the wci version the connected database runs on
+     */
+    std::string wciVersion();
+
 private:
     void setup_();
 

@@ -276,6 +276,15 @@ LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, flo
 	}
 }
 
+std::string LoaderDatabaseConnection::wciVersion()
+{
+	pqxx::work w(* this);
+	pqxx::result result = w.exec("SELECT wci.version()");
+	if ( result.empty() )
+		throw std::runtime_error("No version information from server");
+	return result[0][0].as<std::string>();
+}
+
 void LoaderDatabaseConnection::setup_()
 {
 	// Statement Insert value
