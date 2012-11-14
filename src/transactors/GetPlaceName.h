@@ -101,7 +101,18 @@ public:
 	 */
 	void operator()(argument_type &T)
   	{
-		R_ = T.prepared("GetPlaceName")
+		std::ostringstream query;
+		query << "SELECT * FROM wci.getplacename( "
+			  << xNumber_ << ", "
+			  << yNumber_ << ", "
+			  << xIncrement_ << ", "
+			  << yIncrement_ << ", "
+			  << startX_ << ", "
+			  << startY_ << ", "
+			  << "'" << proj_ << "')";
+		R_ = T.exec( query.str() );
+
+		/*R_ = T.prepared("GetPlaceName")
 					   (xNumber_)
 					   (yNumber_)
 					   (xIncrement_)
@@ -109,6 +120,17 @@ public:
 					   (startX_)
 					   (startY_)
 					   (proj_).exec();
+		//R_ = T.exec("select * from wci.getplacename( 120,170,0.0088,0.0045,4.75,58.8499,'+proj=longlat +a=6367470.0 +towgs84=0,0,0 +no_defs' )", "QUERY");
+		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.getplacename" );
+		log.debugStream() << "Params for Prepared Query ("
+						  << xNumber_ << ", "
+						  << yNumber_ << ", "
+						  << xIncrement_ << ", "
+						  << yIncrement_ << ", "
+						  << startX_ << ", "
+						  << startY_ << ", "
+						  << '\'' << proj_ << "\')";
+						  */
 	}
 
 	/**
@@ -119,6 +141,9 @@ public:
 		WDB_LOG & log = WDB_LOG::getInstance( "wdb.load.getplacename" );
   		if ( R_.size() == 1 ) {
   			if ( R_.at(0).at(0).is_null() ) {
+  				log.debugStream() << "Result returned: "
+  								  << R_.at(0).at(0)
+  								  << R_.at(0).at(1);
   				log.debugStream() << "Did not find any placename matching the definition ("
 								  << xNumber_ << ", "
 								  << yNumber_ << ", "
@@ -126,7 +151,7 @@ public:
 								  << yIncrement_ << ", "
 								  << startX_ << ", "
 								  << startY_ << ", "
-								  << '\'' << proj_ << "')";
+								  << '\'' << proj_ << "\')";
   				std::stringstream def;
 				def << "No match for: "
 					<< xNumber_ << ", "
@@ -135,7 +160,7 @@ public:
 				    << yIncrement_ << ", "
 				    << startX_ << ", "
 				    << startY_ << ", "
-				    << '\'' << proj_;
+				    << '\'' << proj_ << '\'';
   				throw wdb::empty_result( "Failed to identify a placename. " + def.str() );
 			}
 			else {
