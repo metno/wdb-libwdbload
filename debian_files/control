@@ -1,4 +1,4 @@
-Source: libwdbload2
+Source: libwdbload
 Section: science
 Priority: extra
 Maintainer: WDB Group, Meteorologisk institutt <wdb@met.no>
@@ -7,26 +7,26 @@ Build-Depends: debhelper (>= 5),
  autoconf,
  automake (>=1.9),
  cdbs,
- wdb
+ wdb,
+ libboost-test-dev
 Build-Conflicts: autoconf2.13,
  automake1.4
 Standards-Version: 3.9.3
 
-Package: libwdbload2-dev
+Package: libwdbload-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
- libwdbload2 (= ${binary:Version}),
+ libwdbload3 (= ${binary:Version}),
  wdb
-Replaces: libwdbload1-dev
+Replaces: libwdbload1-dev, libwdbload2-dev
 Description: Base (developer) library for loading data into wdb
  Provides basic functionality for loading data into the wdb database.
 
-Package: libwdbload2
+Package: libwdbload3
 Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
-Replaces: libwdbload1
 Suggests: wdb
 Description: Base library for loading data into wdb
  Provides basic functionality for loading data into the wdb database
