@@ -160,7 +160,7 @@ public:
 				    << yIncrement_ << ", "
 				    << startX_ << ", "
 				    << startY_ << ", "
-				    << '\'' << proj_ << '\'';
+				    << "\'" << proj_ << "\'";
   				throw wdb::empty_result( "Failed to identify a placename. " + def.str() );
 			}
 			else {
