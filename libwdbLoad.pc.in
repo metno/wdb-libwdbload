@@ -3,7 +3,7 @@ exec_prefix=@exec_prefix@
 libdir=@libdir@
 includedir=@includedir@
 
-Name: libwdbLoad2
+Name: libwdbLoad3
 Description: Basic functionality for loading data into wdb
 Version: @VERSION@
 Requires: log4cpp libpqxx

@@ -61,7 +61,7 @@ public:
 };
 
 
-BOOST_FIXTURE_TEST_CASE( getVerision, DatabaseFunctionalityTestFixture )
+BOOST_FIXTURE_TEST_CASE( getVersion, DatabaseFunctionalityTestFixture )
 {
 	std::string version = connection.wciVersion();
 
