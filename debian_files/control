@@ -3,7 +3,7 @@ Section: science
 Priority: extra
 Maintainer: WDB Group, Meteorologisk institutt <wdb@met.no>
 Uploaders: Michael O. Akinde <michael.akinde@met.no>
-Build-Depends: debhelper (>= 5),
+Build-Depends: debhelper (>= 7),
  autoconf,
  automake (>=1.9),
  cdbs,
