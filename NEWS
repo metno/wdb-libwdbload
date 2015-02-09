@@ -1,3 +1,15 @@
+libwdbload (2.2.1-1) precise; urgency=low
+
+  * new version, with exit status error codes
+
+ -- Michael Akinde <wdb@met.no>  Mon, 09 Feb 2015 12:38:26 +0100
+
+libwdbload (2.2.0-1) precise; urgency=low
+
+  * new version, with exit status error codes
+
+ -- Michael Akinde <wdb@met.no>  Mon, 09 Feb 2015 12:28:18 +0100
+
 libwdbload (2.1.0-1) precise; urgency=low
 
   * new version to fix some problems

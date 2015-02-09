@@ -8,7 +8,7 @@
 #-----------------------------------------------------------------------------
 
 AC_PREREQ(2.59)
-AC_INIT(libwdbLoad, 2.1.0, [wdb@met.no])
+AC_INIT(libwdbLoad, 2.2.1, [wdb@met.no])
 # Config
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])

@@ -28,6 +28,7 @@
 
 #include "LoaderDatabaseConnection.h"
 #include "LoaderConfiguration.h"
+#include "errors.h"
 #include "transactors/AddPlaceRegularGrid.h"
 #include "transactors/AddSrid.h"
 #include "transactors/BeginWci.h"
@@ -53,6 +54,7 @@ namespace load
 {
 
 LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & config)
+try
 	: pqxx::connection(config.database().pqDatabaseConnection()), config_(new LoaderConfiguration(config))
 {
 	if ( config.loading().nameSpace.empty() )
@@ -62,9 +64,13 @@ LoaderDatabaseConnection::LoaderDatabaseConnection(const LoaderConfiguration & c
 	else if (config.loading().nameSpace == "default" )
 		perform ( BeginWci(config.database().user, 0, 0, 0) );
 	else
-		throw std::logic_error("Unknown name space specification: " + config.loading().nameSpace );
+		throw std::runtime_error("Unknown name space specification: " + config.loading().nameSpace );
 
 	setup_();
+}
+catch ( std::exception & e )
+{
+	throw LoadError(UnableToConnectToDatabase, e.what());
 }
 
 LoaderDatabaseConnection::~LoaderDatabaseConnection()
@@ -92,6 +98,8 @@ LoaderDatabaseConnection::write( const float * values,
 								 int dataVersion,
 								 int confidenceCode )
 {
+	try
+	{
 		perform(
 			WriteByteA( values,
 						noOfValues,
@@ -108,6 +116,11 @@ LoaderDatabaseConnection::write( const float * values,
 						confidenceCode_(confidenceCode) ),
 			1
 		);
+	}
+	catch ( std::exception & e )
+	{
+		throw LoadError(FieldFailedToLoad, e.what());
+	}
 }
 
 void LoaderDatabaseConnection::write(
@@ -155,7 +168,7 @@ LoaderDatabaseConnection::getPlaceName( int xNum,
 	}
 	catch ( const wdb::empty_result &e )
 	{
-		throw;
+		throw LoadError(UnableToReadFromDatabase, e.what());
 	}
 	return ret;
 }
@@ -180,32 +193,39 @@ LoaderDatabaseConnection::addPlaceDefinition( std::string placeName,
 											  float startY,
 											  std::string origProj )
 {
-	/// First check that the SRID is legitimate
-	try {
-		int srid;
-		perform(
-			GetSrid( srid, origProj ),
-			1
-		);
-	}
-	catch ( const wdb::empty_result &e )
+	try
 	{
-		// No SRID was found
+		/// First check that the SRID is legitimate
+		try {
+			int srid;
+			perform(
+				GetSrid( srid, origProj ),
+				1
+			);
+		}
+		catch ( const wdb::empty_result &e )
+		{
+			// No SRID was found
+			perform(
+				AddSrid( placeName_(placeName), origProj ),
+				1
+			);
+			// We use the placeName as the sridName, as this makes it
+			// easier to connect which placedefinition the srid was
+			// first inserted for later. We also expect the placename
+			// to be unique.
+		}
+		// SRID has been found and is valid... attempt to insert place definiton
+		// If we are in a non-default namespace, insert app-generated placename
 		perform(
-			AddSrid( placeName_(placeName), origProj ),
+			AddPlaceDefinition( placeName_(placeName), xNum, yNum, xInc, yInc, startX, startY, origProj ),
 			1
 		);
-		// We use the placeName as the sridName, as this makes it
-		// easier to connect which placedefinition the srid was
-		// first inserted for later. We also expect the placename
-		// to be unique.
 	}
-	// SRID has been found and is valid... attempt to insert place definiton
-	// If we are in a non-default namespace, insert app-generated placename
-	perform(
-		AddPlaceDefinition( placeName_(placeName), xNum, yNum, xInc, yInc, startX, startY, origProj ),
-		1
-	);
+	catch ( std::exception & e )
+	{
+		throw LoadError(UnableToUpdateMetadata, e.what());
+	}
 	// Finally, get the placeName again...
 	return getPlaceName( xNum, yNum, xInc, yInc, startX, startY, origProj );
 }
@@ -256,7 +276,7 @@ LoaderDatabaseConnection::loadField(long int dataProvider,
 	catch (const exception &e)
 	{
 		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw;
+	    throw LoadError(FieldFailedToLoad, e.what());
 	}
 }
 
@@ -272,17 +292,24 @@ LoaderDatabaseConnection::readUnit( const std::string & unit, float * coeff, flo
 	catch (const exception &e)
 	{
 		// All exceptions thrown by libpqxx are derived from std::exception
-	    throw e;
+	    throw LoadError(UnableToUpdateMetadata, e.what());
 	}
 }
 
 std::string LoaderDatabaseConnection::wciVersion()
 {
-	pqxx::work w(* this);
-	pqxx::result result = w.exec("SELECT wci.version()");
-	if ( result.empty() )
-		throw std::runtime_error("No version information from server");
-	return result[0][0].as<std::string>();
+	try
+	{
+		pqxx::work w(* this);
+		pqxx::result result = w.exec("SELECT wci.version()");
+		if ( result.empty() )
+			throw std::runtime_error("No version information from server");
+		return result[0][0].as<std::string>();
+	}
+	catch (std::exception & e )
+	{
+		throw LoadError(UnableToReadFromDatabase, e.what());
+	}
 }
 
 void LoaderDatabaseConnection::setup_()

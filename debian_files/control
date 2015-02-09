@@ -17,13 +17,13 @@ Package: libwdbload-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
- libwdbload3 (= ${binary:Version}),
+ libwdbload4 (= ${binary:Version}),
  wdb
-Replaces: libwdbload1-dev, libwdbload2-dev
+Replaces: libwdbload1-dev, libwdbload2-dev, libwdbload3-dev
 Description: Base (developer) library for loading data into wdb
  Provides basic functionality for loading data into the wdb database.
 
-Package: libwdbload3
+Package: libwdbload4
 Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
