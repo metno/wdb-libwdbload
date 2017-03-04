@@ -13,6 +13,15 @@ AC_INIT(libwdbLoad, 2.2.1, [wdb@met.no])
 AC_CONFIG_SRCDIR([config.h.in])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([config/m4])
+
+
+#-----------------------------------------------------------------------------
+# Automake
+#-----------------------------------------------------------------------------
+
+AM_INIT_AUTOMAKE(-Wall -Werror subdir-objects)
+AM_PROG_CC_C_O
+AM_PROG_AR
 AC_PROG_LIBTOOL
 
 #-----------------------------------------------------------------------------
@@ -31,7 +40,6 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
-
 
 #-----------------------------------------------------------------------------
 # Checks
@@ -73,8 +81,8 @@ AX_BOOST_PROGRAM_OPTIONS
 AX_BOOST_SYSTEM
 AX_BOOST_UNIT_TEST_FRAMEWORK
 
-CPPFLAGS = $(BOOST_CPPFLAGS)
-LDFLAGS = $(BOOST_LDFLAGS) $(BOOST_PROGRAM_OPTIONS_LIB)
+CPPFLAGS="$BOOST_CPPFLAGS"
+LDFLAGS="$BOOST_LDFLAGS $BOOST_PROGRAM_OPTIONS_LIB"
 
 # LOG4CPP
 WDB_LOG4CPP_CHECK(1.0)
@@ -87,13 +95,6 @@ WDB_PQXX_CHECK(2.6.8)
 
 # No docbook documentation
 # WDB_DOCBOOK_CHECK
-
-#-----------------------------------------------------------------------------
-# Automake
-#-----------------------------------------------------------------------------
-
-AM_INIT_AUTOMAKE(-Wall -Werror subdir-objects)
-AM_PROG_CC_C_O
 
 
 #-----------------------------------------------------------------------------
