@@ -17,7 +17,7 @@ Package: libwdbload-dev
 Section: libdevel
 Architecture: any
 Depends: ${misc:Depends},
- libwdbload4 (= ${binary:Version}),
+ libwdbload5 (= ${binary:Version}),
  wdb
 Replaces: libwdbload1-dev, libwdbload2-dev, libwdbload3-dev
 Description: Base (developer) library for loading data into wdb
