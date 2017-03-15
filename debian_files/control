@@ -23,7 +23,7 @@ Replaces: libwdbload1-dev, libwdbload2-dev, libwdbload3-dev
 Description: Base (developer) library for loading data into wdb
  Provides basic functionality for loading data into the wdb database.
 
-Package: libwdbload4
+Package: libwdbload5
 Architecture: any
 Depends: ${shlibs:Depends},
  ${misc:Depends}
